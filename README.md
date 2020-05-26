@@ -12,7 +12,7 @@ The goal of caladapt-py is to…
 
 This is a basic example which shows you how to solve a common problem:
 
-``` r
-library(caladaptr)
+``` python
+import XXX
 ## basic example code
 ```
