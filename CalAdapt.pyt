@@ -1,0 +1,1095 @@
+import arcpy
+try:
+    import arcpy
+    import requests 
+    import urllib3, shutil
+
+except ImportError:
+    print('Some required Python modules are missing.')
+
+#  This function downloads data from the given api and saves the file to a
+#  local folder defines by the output location (outLoc)
+def downloadData(baseurl, outLoc, filename):
+    try:
+        #filename = fileConcat % (var, year, year)
+        url = '%s/%s' % (baseurl, filename)
+        r = requests.get(url, allow_redirects=True) #stream = True)
+        filename = '%s/%s' % (outLoc, filename)
+
+        r.status_code
+
+        if r.status_code == 200:
+            with open(filename, 'wb') as f:
+                f.write(r.content)
+        return r.status_code
+
+    except requests.exceptions.HTTPError as err:
+        print(err)
+
+def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
+    if dataType == "met":
+        filenameScheme = '%s_day_%s_%s_%s%s0101-%s1231.LOCA_2016-04-02.16th.CA_NV.nc' % (variable,climateModel,climateScenario,"%s",yearVar,yearVar)
+        serverLocation = '%s/%s/%s/%s' % (dataType,climateModel,climateScenario,variable)
+        source = ['r1i1p1_','r2i1p1_','r6i1p1_','r6i1p3_','r8i1p1_']
+    elif dataType == "rel_humid":
+        yearData = yearVar.split(' ')
+        yearVar = yearData[0]
+        if yearData[1] == 'daily':
+            data = ''
+        elif yearData[1] == 'monthly':
+            data = '.monthly'
+        elif yearData[1] == 'average_monthly':
+            data ='.monthly.clim'
+        filenameScheme = '%s_%s.%s.%s.%s.LOCA_2017-04-13.CA_NV%s.nc' % (dataType,variable,climateModel,climateScenario,yearVar,data)
+        serverLocation = '%s/%s/%s' % (dataType,climateModel,climateScenario)
+        source = ['']
+    elif dataType == "solards":
+        filenameScheme = 'rsds_day_%s_%s_%s%s.crop.fixcal.bc.srs.1x1.bc.srs.ds.postds_bc.nc' % (climateModel,climateScenario,"%s",yearVar)
+        serverLocation = '%s/%s' % (dataType,climateModel)
+        source = ['r1i1p1_','r6i1p1_']
+    elif dataType == "wspeed":
+        filenameScheme = '%s_day_%s_%s_%s%s.crop.bc.srs.1x1.bc.srs.ds.postds_bc.nc' % (dataType,climateModel,climateScenario,"%s",yearVar)
+        serverLocation = '%s/%s' % (dataType,climateModel)
+        source = ['r1i1p1_','r2i1p1_','r6i1p1_','r6i1p3_','r8i1p1_']
+
+    return [filenameScheme,serverLocation,source]
+
+class Toolbox(object):
+    def __init__(self):
+        """Define the toolbox (the name of the toolbox is the name of the
+        .pyt file)."""
+        self.label = "CalAdapt ArcGIS Tools"
+        self.alias = ""
+
+        # List of tool classes associated with this toolbox
+        self.tools = [Livneh_Data,LOCA_Data,CA_Drought_Data, Livneh_vic_Data,Loca_vic_Data,StreamFlow_Data,MC2_Data,UCLA_Data]
+
+#  This function downloads NOAA data and saves the file to a
+#  local folder defines by the output location (outLoc)
+
+class Livneh_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Livneh Data"
+        self.description = "GRIDDED OBSERVED METEOROLOGICAL DATA"
+        self.canRunInBackground = True
+        self.category = "University of Colorado - Boulder"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # First parameter
+        yearb = arcpy.Parameter(
+            displayName="Year Between 1950-2013",
+            name="start year",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        # First parameter
+        yeare = arcpy.Parameter(
+            displayName="Ending Year (if more than one)",
+            name="end year",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input")
+        
+        # Second parameter
+        months = arcpy.Parameter(
+            displayName="Numeric Month",
+            name="months",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        months.filter.list = ['all','01','02','03','04','05','06','07','08','09','10','11','12']
+        months.value = "all"
+
+        # Third parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Fourth parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [yearb,yeare,months,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        if parameters[0].altered:
+            if int(parameters[0].valueAsText) < 1950 or int(parameters[0].valueAsText) > 2013:
+                parameters[0].value = ""
+        if parameters[1].altered:
+            if int(parameters[1].valueAsText) < 1950 or int(parameters[1].valueAsText) > 2013:
+                parameters[1].value = ""
+        if parameters[0].altered or parameters[1].altered or parameters[2].altered or parameters[3].altered:
+            if not parameters[1].valueAsText and not parameters[2].valueAsText == "all":
+                parameters[4].value = '%s/livneh_CA_NV_15Oct2014.%s%s.nc' % (parameters[3].valueAsText, parameters[0].valueAsText, parameters[2].valueAsText)
+                parameters[4].enabled = True
+            else:
+                parameters[4].enabled = False
+                parameters[4].value = ''
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        baseurl = 'http://albers.cnr.berkeley.edu/data/noaa/livneh/CA_NV'
+        #yearVar = parameters[0].valueAsText
+        #monthVar = parameters[2].valueAsText
+        filenameScheme = 'livneh_CA_NV_15Oct2014.%s%s.nc'
+        outLoc = parameters[3].valueAsText
+
+        if (parameters[1].valueAsText):
+            year2 = int(parameters[1].valueAsText) + 1
+        else:
+            year2 = int(parameters[0].valueAsText) + 1
+        years = range(int(parameters[0].valueAsText),year2)
+        
+        if (parameters[2].valueAsText == "all"):
+            months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+        else:
+            months = [parameters[2].valueAsText]
+
+        for yearVar in years:
+            for monthVar in months:
+                filename = filenameScheme % (yearVar, monthVar)
+                status = downloadData(baseurl, outLoc, filename)
+                arcpy.AddMessage([baseurl, outLoc, filename])
+                #if status == 200:
+                #    break
+        return
+
+#  This function downloads SCRIPPS data and saves the file to a
+#  local folder defines by the output location (outLoc)
+    
+class LOCA_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "LOCA Data"
+        self.description = "LOCA Downscaled CMIP5 Climate Projections"
+        self.canRunInBackground = True
+        self.category = "Scripps Institution Of Oceanography"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # First parameter
+        dataType = arcpy.Parameter(
+            displayName="Data Type",
+            name="Data Type",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        dataType.filter.list = ['met','rel_humid','solards','wspeed']
+        dataType.value = 'met'
+
+        # First parameter
+        climateModel = arcpy.Parameter(
+            displayName="Climate Model",
+            name="Climate Model",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateModel.filter.list = ['ACCESS1-0','ACCESS1-3','CCSM4','CESM1-BGC','CESM1-CAM5','CMCC-CM','CMCC-CMS','CNRM-CM5','CSIRO-Mk3-6-0','CanESM2',
+                                'EC-EARTH','FGOALS-g2','GFDL-CM3','GFDL-ESM2G','GFDL-ESM2M','GISS-E2-H','GISS-E2-R','HadGEM2-AO','HadGEM2-CC',
+                                'HadGEM2-ES','IPSL-CM5A-LR','IPSL-CM5A-MR','MIROC-ESM','MIROC-ESM-CHEM','MIROC5','MPI-ESM-LR','MPI-ESM-MR','MRI-CGCM3',
+                                'NorESM1-M','bcc-csm1-1','bcc-csm1-1-m','inmcm4']
+
+        # First parameter
+        climateScenario = arcpy.Parameter(
+            displayName="Climate Scenario",
+            name="Climate Scenario",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateScenario.filter.list = ['historical','rcp45','rcp85']
+
+        # First parameter
+        variables = arcpy.Parameter(
+            displayName="variables",
+            name="variables",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        variables.filter.list = ['DTR','cdd','pr','tasmax','tasmin']
+                
+        # First parameter
+        yearb = arcpy.Parameter(
+            displayName="Time Period",
+            name="start year",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        # First parameter
+        yeare = arcpy.Parameter(
+            displayName="Ending Time Period (if more than one)",
+            name="end year",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input",
+            enabled=True)
+        
+        # Second parameter
+        '''months = arcpy.Parameter(
+            displayName="Numeric Month",
+            name="months",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        months.filter.list = ['all','01','02','03','04','05','06','07','08','09','10','11','12']
+        months.value = "all"
+        '''
+
+        # Third parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Fourth parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [dataType,climateModel,climateScenario,variables,yearb,yeare,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+
+        if parameters[0].valueAsText == "met":
+            parameters[1].filter.list = ['ACCESS1-0','ACCESS1-3','CCSM4','CESM1-BGC','CESM1-CAM5','CMCC-CM','CMCC-CMS','CNRM-CM5','CSIRO-Mk3-6-0',
+            'CanESM2','EC-EARTH','FGOALS-g2','GFDL-CM3','GFDL-ESM2G','GFDL-ESM2M','GISS-E2-H','GISS-E2-R','HadGEM2-AO','HadGEM2-CC','HadGEM2-ES',
+            'IPSL-CM5A-LR','IPSL-CM5A-MR','MIROC-ESM','MIROC-ESM-CHEM','MIROC5','MPI-ESM-LR','MPI-ESM-MR','MRI-CGCM3','NorESM1-M','bcc-csm1-1',
+            'bcc-csm1-1-m','inmcm4']
+            parameters[3].filter.list = ['DTR','cdd','pr','tasmax','tasmin']
+            parameters[4].filter.list = []
+            parameters[5].enabled = True
+        elif parameters[0].valueAsText == "rel_humid":
+            parameters[1].filter.list = ['ACCESS1-0','ACCESS1-3','CCSM4','CNRM-CM5','CanESM2','FGOALS-g2','GFDL-CM3','GFDL-ESM2G','GFDL-ESM2M',
+            'GISS-E2-H','GISS-E2-R','HadGEM2-AO','HadGEM2-CC','HadGEM2-ES','IPSL-CM5A-LR','IPSL-CM5A-MR','MIROC-ESM','MIROC-ESM-CHEM','MIROC5',
+            'MRI-CGCM3','NorESM1-M','bcc-csm1-1','bcc-csm1-1-m','inmcm4']
+            parameters[3].filter.list = ['max','min']
+            parameters[4].filter.list = ['1950-2005 daily','1950-2005 monthly','1950-2005 average_monthly','2006-2100 daily','2006-2100 monthly','2006-2100 average_monthly']
+            parameters[5].enabled = False
+        elif parameters[0].valueAsText == "solards":
+            parameters[1].filter.list = ['ACCESS1-0','CCSM4','CMCC-CMS','CNRM-CM5','CanESM2','GFDL-CM3','HadGEM2-CC','HadGEM2-ES','MIROC5']
+            parameters[3].filter.list = ['day']
+            parameters[3].value = 'day'
+            parameters[4].filter.list = ['19500101-20051231','20060101-21001231']
+            parameters[5].enabled = False
+        elif parameters[0].valueAsText == "wspeed":
+            parameters[1].filter.list = ['ACCESS1-0','CMCC-CMS','CNRM-CM5','CanESM2','GFDL-CM3','HadGEM2-CC','HadGEM2-ES','MIROC5']
+            parameters[3].filter.list = ['day']
+            parameters[3].value = 'day'
+            parameters[4].filter.list = ['19500101-20051231','20060101-20391231','20400101-20691231','20700101-21001231']
+            parameters[5].enabled = False
+
+        if parameters[2].altered and parameters[0].valueAsText == 'wspeed':
+            if parameters[2].valueAsText == 'historical':
+                parameters[4].filter.list = ['19500101-20051231']
+                #parameters[4].value = "19500101-20051231"
+            else:
+                parameters[4].filter.list = ['20060101-20391231','20400101-20691231','20700101-21001231']
+                #parameters[4].value = ""
+
+        if parameters[2].altered and parameters[0].valueAsText == 'rel_humid':
+            if parameters[2].valueAsText == 'historical':
+                parameters[4].filter.list = ['1950-2005 daily','1950-2005 monthly','1950-2005 average_monthly']
+                #parameters[4].value = "19500101-20051231"
+            else:
+                parameters[4].filter.list = ['2006-2100 daily','2006-2100 monthly','2006-2100 average_monthly']
+                #parameters[4].value = ""
+
+        if parameters[2].altered and parameters[0].valueAsText == 'solards':
+            if parameters[2].valueAsText == 'historical':
+                parameters[4].filter.list = ['19500101-20051231']
+                #parameters[4].value = "19500101-20051231"
+            else:
+                if parameters[1].valueAsText == 'HadGEM2-ES':
+                    parameters[4].filter.list = ['20060101-20991231']
+                else:
+                    parameters[4].filter.list = ['20060101-21001231']
+                #parameters[4].value = ""
+                
+        if parameters[4].altered and parameters[0].valueAsText == 'met':
+            if parameters[2].valueAsText == 'historical':
+                if int(parameters[4].valueAsText) < 1950 or int(parameters[4].valueAsText) > 2005:
+                    parameters[4].value = ""
+            else:
+                if int(parameters[4].valueAsText) < 2006 or int(parameters[4].valueAsText) > 2100:
+                    parameters[4].value = ""           
+
+        if parameters[5].altered and parameters[0].valueAsText == 'met':
+            if parameters[2].valueAsText == 'historical':
+                if int(parameters[5].valueAsText) < 1950 or int(parameters[5].valueAsText) > 2005:
+                    parameters[5].value = ""
+            else:
+                if int(parameters[5].valueAsText) < 2006 or int(parameters[5].valueAsText) > 2100:
+                    parameters[5].value = ""
+                    
+        '''
+        if parameters[0].altered or parameters[1].altered or parameters[2].altered or parameters[3].altered:
+            if not parameters[1].valueAsText and not parameters[2].valueAsText == "all":
+                parameters[4].value = '%s/livneh_CA_NV_15Oct2014.%s%s.nc' % (parameters[3].valueAsText, parameters[0].valueAsText, parameters[2].valueAsText)
+                parameters[4].enabled = True
+            else:
+                parameters[4].enabled = False
+                parameters[4].value = ''
+        '''
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        baseurl = 'http://albers.cnr.berkeley.edu/data/scripps/loca'
+        #[dataType,climateModel,climateScenario,variables,yearb,yeare,outLoc,outFile]
+        dataType = parameters[0].valueAsText
+        climateModel = parameters[1].valueAsText
+        climateScenario = parameters[2].valueAsText
+        variable = parameters[3].valueAsText        
+        outLoc = parameters[6].valueAsText
+
+        if dataType == 'met':
+            if (parameters[5].valueAsText):
+                year2 = int(parameters[5].valueAsText) + 1
+            else:
+                year2 = int(parameters[4].valueAsText) + 1
+            years = range(int(parameters[4].valueAsText),year2)
+
+            for yearVar in years:
+                names = makeFileName(dataType,climateModel,climateScenario,variable,yearVar)
+                for source in names[2]:
+                    filename = names[0] % (source)
+                    url = '%s/%s' % (baseurl, names[1])
+                    status = downloadData(url, outLoc, filename)
+                    arcpy.AddMessage(source)
+                    if status == 200:
+                        break
+        else:
+            yearVar = parameters[4].valueAsText
+            names = makeFileName(dataType,climateModel,climateScenario,variable,yearVar)
+            for source in names[2]:
+                arcpy.AddMessage(names)
+                if not source:
+                    filename = names[0]
+                else:
+                    filename = names[0] % (source)
+                url = '%s/%s' % (baseurl, names[1])
+                status = downloadData(url, outLoc, filename)
+                arcpy.AddMessage(source)
+                if status == 200:
+                    break
+
+        arcpy.AddMessage([url, outLoc, filename])
+        return
+
+class CA_Drought_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "CA Drought Data"
+        self.description = "California Drought data using original CMIP5 HadGEM2-ES"
+        self.canRunInBackground = True
+        self.category = "Scripps Institution Of Oceanography"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # First parameter
+        variables = arcpy.Parameter(
+            displayName="variables",
+            name="variables",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        variables.filter.list = ['ET','SWE','Tair','baseflow','precip','runoff','soilMoist1','soilMoist2','soilMoist3','tasmax','tasmin']
+                
+        # Second parameter
+        yearb = arcpy.Parameter(
+            displayName="Time Period",
+            name="start year",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        yearb.filter.list = ['2018-2046','2046-2074']
+        
+        # Third parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Fourth parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [variables,yearb,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        
+        if parameters[0].valueAsText == "tasmin" or parameters[0].valueAsText == "tasmax":
+            parameters[1].filter.list = ['2018-2047','2046-2075']
+        else:
+            parameters[1].filter.list = ['2018-2046','2046-2074']
+            
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        baseurl = 'http://albers.cnr.berkeley.edu/data/scripps/cadrought'
+        variable = parameters[0].valueAsText
+        yearVar = parameters[1].valueAsText
+        filenameScheme = '%s.HadGEM2-ES.rcp85.%s.drought.nc'
+        outLoc = parameters[2].valueAsText
+
+        ts = ['t']
+        for t in ts:
+            filename = filenameScheme % (variable, yearVar)
+            status = downloadData(baseurl, outLoc, filename)
+
+            if status == 200:
+                break
+                
+        arcpy.AddMessage(status)
+        arcpy.AddMessage([baseurl, outLoc, filename])
+        return
+
+class Livneh_vic_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Livneh VIC Data"
+        self.description = "GRIDDED OBSERVED METEOROLOGICAL DATA"
+        self.canRunInBackground = True
+        self.category = "Scripps Institution Of Oceanography"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # First parameter
+        variables = arcpy.Parameter(
+            displayName="variables",
+            name="variables",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        variables.filter.list = ['albedo','baseflow','del_SWE','ET','latent','longwave_net','pet_natveg','precip','Qair',
+                                 'rainfall','relHumid','runoff','sensible','shortwave_in','shortwave_net','snow_melt','snowfall',
+                                 'soilMoist1','soilMoist2','soilMoist3','sublimation_net','SWE','Tair','tot_runoff','wdew','windspeed']
+                
+        # Second parameter
+        yearb = arcpy.Parameter(
+            displayName="Time Period",
+            name="start year",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        # Third parameter
+        yeare = arcpy.Parameter(
+            displayName="Ending Year (if more than one)",
+            name="end year",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input")
+        
+        # Fourth parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Fifth parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [variables,yearb,yeare,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        
+        if parameters[1].altered:
+            if int(parameters[1].valueAsText) < 1950 or int(parameters[1].valueAsText) > 2013:
+                parameters[1].value = ""
+        if parameters[2].altered:
+            if int(parameters[2].valueAsText) < 1950 or int(parameters[2].valueAsText) > 2013:
+                parameters[2].value = ""
+   
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        baseurl = 'http://albers.cnr.berkeley.edu/data/scripps/livneh_vic-output'
+        variable = parameters[0].valueAsText
+        filenameScheme = '%s.%s.v0.nc'
+        outLoc = parameters[3].valueAsText
+
+        if (parameters[2].valueAsText):
+            year2 = int(parameters[2].valueAsText) + 1
+        else:
+            year2 = int(parameters[1].valueAsText) + 1
+        years = range(int(parameters[1].valueAsText),year2)
+        
+        for yearVar in years:
+            filename = filenameScheme % (variable, yearVar)
+            status = downloadData(baseurl, outLoc, filename)
+            if status == 200:
+                break
+            arcpy.AddMessage([baseurl, outLoc, filename])
+        return
+    
+class Loca_vic_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "LOCA VIC Data"
+        self.description = "GRIDDED OBSERVED METEOROLOGICAL DATA"
+        self.canRunInBackground = True
+        self.category = "Scripps Institution Of Oceanography"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+
+        # First parameter
+        climateModel = arcpy.Parameter(
+            displayName="Climate Model",
+            name="Climate Model",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateModel.filter.list = ['ACCESS1-0','ACCESS1-3','bcc-csm1-1','bcc-csm1-1-m','CanESM2','CCSM4','CESM1-BGC','CESM1-CAM5',
+                                    'CMCC-CM','CMCC-CMS','CNRM-CM5','CSIRO-Mk3-6-0','EC-EARTH','FGOALS-g2','GFDL-CM3','GFDL-ESM2G',
+                                    'GFDL-ESM2M','GISS-E2-H','GISS-E2-R','HadGEM2-AO','HadGEM2-CC','HadGEM2-ES','inmcm4','IPSL-CM5A-LR',
+                                    'IPSL-CM5A-MR','MIROC5','MIROC-ESM','MIROC-ESM-CHEM','MPI-ESM-LR','MPI-ESM-MR','MRI-CGCM3','NorESM1-M']
+         # Second parameter
+        climateScenario = arcpy.Parameter(
+            displayName="Climate Scenario",
+            name="Climate Scenario",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateScenario.filter.list = ['historical','rcp45','rcp85']
+        
+        # Third parameter
+        variables = arcpy.Parameter(
+            displayName="variables",
+            name="variables",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        variables.filter.list = ['albedo','baseflow','del_SWE','ET','latent','longwave_net','pet_natveg','precip','Qair',
+                                 'rainfall','relHumid','runoff','sensible','shortwave_in','shortwave_net','snow_melt','snowfall',
+                                 'soilMoist1','soilMoist2','soilMoist3','sublimation_net','SWE','Tair','tot_runoff','wdew','windspeed']
+                
+        # Fourth parameter
+        yearb = arcpy.Parameter(
+            displayName="Time Period",
+            name="start year",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        # Fifth parameter
+        yeare = arcpy.Parameter(
+            displayName="Ending Year (if more than one)",
+            name="end year",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input")
+        
+        # Sixth parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Seventh parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [climateModel,climateScenario,variables,yearb,yeare,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        
+        if parameters[1].altered:
+            if parameters[1].valueAsText == 'historical':
+                if int(parameters[3].valueAsText) < 1950 or int(parameters[3].valueAsText) > 2005:
+                    parameters[3].value = ""
+            else:
+                if int(parameters[3].valueAsText) < 2006 or int(parameters[3].valueAsText) > 2100:
+                    parameters[2].value = ""
+            if parameters[1].valueAsText == 'historical':
+                if int(parameters[4].valueAsText) < 1950 or int(parameters[4].valueAsText) > 2005:
+                    parameters[4].value = ""
+            else:
+                if int(parameters[4].valueAsText) < 2006 or int(parameters[4].valueAsText) > 2100:
+                    parameters[4].value = ""
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        baseurl = 'http://albers.cnr.berkeley.edu/data/scripps/loca_vic-output'
+        model = parameters[0].valueAsText
+        scenario = parameters[1].valueAsText
+        variable = parameters[2].valueAsText
+        filenameScheme = '%s.%s.v0.CA_NV.nc'
+        outLoc = parameters[5].valueAsText
+
+        url = '%s/%s/%s' % (baseurl,model,scenario)
+
+        if (parameters[4].valueAsText):
+            year2 = int(parameters[4].valueAsText) + 1
+        else:
+            year2 = int(parameters[3].valueAsText) + 1
+        years = range(int(parameters[3].valueAsText),year2)
+        
+        for yearVar in years:
+            filename = filenameScheme % (variable, yearVar)
+            status = downloadData(url, outLoc, filename)
+            if status == 200:
+                break
+            arcpy.AddMessage([url, outLoc, filename])
+        return
+
+class StreamFlow_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Stream Flow Data"
+        self.description = "Stream Flow DATA"
+        self.canRunInBackground = True
+        self.category = "Scripps Institution Of Oceanography"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+
+        # First parameter
+        climateModel = arcpy.Parameter(
+            displayName="Climate Model",
+            name="Climate Model",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateModel.filter.list = ['ACCESS1-0','CanESM2','CCSM4','CESM1-BGC','CMCC-CMS','CNRM-CM5','GFDL-CM3','HadGEM2-CC','HadGEM2-ES','MIROC5']
+
+        # Second parameter
+        climateScenario = arcpy.Parameter(
+            displayName="Climate Scenario",
+            name="Climate Scenario",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateScenario.filter.list = ['rcp45','rcp85']
+        
+        # Third parameter
+        variables = arcpy.Parameter(
+            displayName="variables",
+            name="variables",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        variables.filter.list = ['BEARC','DPR_I','FOL_I','LK_MC','MILLE','N_HOG','N_MEL','OROVI','PRD-C','SAC_B','SMART']
+        
+        # Fourth parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Fifth parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [climateModel,climateScenario,variables,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        baseurl = 'http://albers.cnr.berkeley.edu/data/scripps/streamflow'
+        model = parameters[0].valueAsText
+        scenario = parameters[1].valueAsText
+        variable = parameters[2].valueAsText
+        filenameScheme = '%s.%s.%s.%s.monthly.BC.nc'
+        outLoc = parameters[3].valueAsText
+
+        years = ['1950-2100']
+        for yearVar in years:
+            arcpy.AddMessage(yearVar)
+            filename = filenameScheme % (model, scenario, variable, yearVar)
+            status = downloadData(baseurl, outLoc, filename)
+            if status == 200:
+                break
+            arcpy.AddMessage([baseurl, outLoc, filename])
+        return
+
+#  This function downloads MC2 data and saves the file to a
+#  local folder defines by the output location (outLoc)
+class MC2_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "MC2 Data"
+        self.description = "Unknown"
+        self.canRunInBackground = True
+        self.category = "MC2"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # First parameter
+        Model = arcpy.Parameter(
+            displayName="Model",
+            name="Model",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        Model.filter.list = ['LU','PNV','PNV+FS']
+
+        # Second parameter
+        climateModel = arcpy.Parameter(
+            displayName="Climate Model",
+            name="Climate Model",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateModel.filter.list = ['CGCM3','Csiro','Miroc3']
+
+        # Third parameter
+        climateScenario = arcpy.Parameter(
+            displayName="Climate Scenario",
+            name="Climate Scenario",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateScenario.filter.list = ['A1B','A2','B1']
+        
+        # Fourth parameter
+        variables = arcpy.Parameter(
+            displayName="variables",
+            name="variables",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        variables.filter.list = ['C_ECOSYS','C_SOIL_AND_LITTER','C_VEG','CONSUMED','NBP','VTYPE']
+        
+        # Fifth parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Sixth parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [Model,climateModel,climateScenario,variables,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        baseurl = 'http://albers.cnr.berkeley.edu/data/MC2'
+        model = parameters[0].valueAsText
+        climateModel = parameters[1].valueAsText
+        climateScenario = parameters[2].valueAsText
+        variable = parameters[3].valueAsText
+        filenameScheme = '%s.nc'
+        outLoc = parameters[4].valueAsText
+        url = '%s/%s/%s/%s' % (baseurl,model,climateScenario,climateModel)
+
+        filename = filenameScheme % (variable)
+        
+        ts = ['t']
+        for t in ts:
+            status = downloadData(url, outLoc, filename)
+            if status == 200:
+                break
+            arcpy.AddMessage([baseurl, outLoc, filename])
+
+        return
+
+#  This function downloads UCLA data and saves the file to a
+#  local folder defines by the output location (outLoc)
+class UCLA_Data(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Unknown Data"
+        self.description = ""
+        self.canRunInBackground = True
+        self.category = "University of California - Los Angeles"  
+
+    def getParameterInfo(self):
+        """Define parameter definitions"""
+        # First parameter
+        climateModel = arcpy.Parameter(
+            displayName="Climate Model",
+            name="Climate Model",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateModel.filter.list = ['invariant','CNRM-CM5','GFDL-CM3','inmcm4','IPSL-CM5A-LR','MPI-ESM-LR']
+        #climateModel.value = ""
+
+        # Second parameter
+        climateScenario = arcpy.Parameter(
+            displayName="Climate Scenario",
+            name="Climate Scenario",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        climateScenario.filter.list = ['Historic','Future']
+
+        # First parameter
+        yearb = arcpy.Parameter(
+            displayName="Year Between 1991-2000 or 2091-2100",
+            name="start year",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        # First parameter
+        yeare = arcpy.Parameter(
+            displayName="Ending Year (if more than one)",
+            name="end year",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input")
+        
+        # Second parameter
+        months = arcpy.Parameter(
+            displayName="Numeric Month",
+            name="months",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        months.filter.list = ['all','01','02','03','04','05','06','07','08','09','10','11','12']
+        months.value = "all"
+
+        # Third parameter
+        outLoc = arcpy.Parameter(
+            displayName="Output Location",
+            name="outLoc",
+            datatype="DEWorkspace",
+            parameterType="Required",
+            direction="Input")
+
+        # Fourth parameter
+        outFile = arcpy.Parameter(
+            displayName="Output File",
+            name="Output File",
+            datatype="DEFile",
+            parameterType="Derived",
+            direction="Output",
+            enabled=False)
+        
+        params = [climateModel,climateScenario,yearb,yeare,months,outLoc,outFile]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        
+        '''
+        if parameters[1].altered or parameters[2].altered or parameters[3].altered:
+            if parameters[1].value == "Future":
+                arcpy.AddMessage(parameters[2].valueAsText)
+                if int(parameters[2].valueAsText) < 2091 or int(parameters[2].valueAsText) > 2100:
+                    parameters[2].value = ''
+                if int(parameters[3].valueAsText) < 2091 or int(parameters[3].valueAsText) > 2100:
+                    parameters[3].value = ''
+            else:
+                if int(parameters[2].valueAsText) < 1991 or int(parameters[2].valueAsText) > 2000:
+                    parameters[2].value = ''
+                if int(parameters[3].valueAsText) < 1991 or int(parameters[3].valueAsText) > 2000:
+                    parameters[3].value = ''
+        '''
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        #parameters[3].clearMessage()
+
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        #params = [climateModel,climateScenario,yearb,yeare,months,outLoc,outFile]
+        baseurl = 'http://albers.cnr.berkeley.edu/data/ucla'
+        climateModel = parameters[0].valueAsText
+        climateScenario = parameters[1].valueAsText
+
+        if not parameters[2].valueAsText:
+            yearb = parameters[2].valueAsText
+        else:
+            yearb = parameters[2].valueAsText
+        if not parameters[3].valueAsText:
+            yeare = "None"
+        else:
+            yeare = parameters[3].valueAsText
+        arcpy.AddMessage(yearb)
+        arcpy.AddMessage(yeare)
+
+        #filenameScheme = 'wrfpost_.%s%s.nc'
+        outLoc = parameters[5].valueAsText
+
+        if (parameters[3].valueAsText):
+            year2 = int(parameters[3].valueAsText) + 1
+        else:
+            year2 = int(parameters[2].valueAsText) + 1
+        years = range(int(parameters[2].valueAsText),year2)
+        
+        if (parameters[4].valueAsText == "all"):
+            months = ['01','02','03','04','05','06','07','08','09','10','11','12']
+        else:
+            months = [parameters[2].valueAsText]
+
+        for yearVar in years:
+            for monthVar in months:
+                if climateModel == 'invariant':
+                    filename = 'invariant_d02.nc'
+                elif climateScenario == 'Future':
+                    filename = 'wrfpost_%s_d02_%s%s.nc' % (climateModel,yearVar,monthVar)
+                else:
+                    filename = 'wrfpost_d02_%s%s.nc' % (yearVar,monthVar)
+                #filename = filenameScheme % (yearVar, monthVar)
+                status = downloadData(baseurl, outLoc, filename)
+                arcpy.AddMessage([baseurl, outLoc, filename])
+                if status == 200:
+                    break
+        return
