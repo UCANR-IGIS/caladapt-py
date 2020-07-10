@@ -16,7 +16,7 @@ class Toolbox(object):
         self.alias = ""
 
         # List of tool classes associated with this toolbox
-        self.tools = [Livneh_Data,LOCA_Data,CA_Drought_Data, Livneh_vic_Data,Loca_vic_Data,StreamFlow_Data,MC2_Data,UCLA_Data,DataAPI]
+        self.tools = [Livneh_Data,LOCA_Data,CA_Drought_Data, Livneh_vic_Data,Loca_vic_Data,StreamFlow_Data,MC2_Data,UCLA_Data,GetDataAPI,CreateChart]
 
 #  This function downloads NOAA data and saves the file to a
 #  local folder defines by the output location (outLoc)
@@ -1048,27 +1048,61 @@ class UCLA_Data(object):
                     break
         return
 #  This function queries the CalAdapy API and shows the data in the tool window
-class DataAPI(object):
+class GetDataAPI(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "Unknown Data"
+        self.label = "Get Data from API"
         self.description = ""
         self.canRunInBackground = True
         self.category = "CalAdapt - API"  
 
     def getParameterInfo(self):
-        param0 = arcpy.Parameter(
+        in_feature_set = arcpy.Parameter(
             displayName="Input Feature Set",
             name="in_feature_set",
             datatype="GPFeatureRecordSetLayer",
             parameterType="Required",
             direction="Input")
+        individual_features = arcpy.Parameter(
+            displayName="Process Features Individually",
+            name="individual_features",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input")
+        historical = arcpy.Parameter(
+            displayName="Include Historical",
+            name="historical",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
+        rcp45 = arcpy.Parameter(
+            displayName="Include RCP 4.5",
+            name="rcp45",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
+        rcp85 = arcpy.Parameter(
+            displayName="Include RCP 8.5",
+            name="rcp85",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
+        outTable = arcpy.Parameter(
+            displayName="Output Table",
+            name="outTable",
+            datatype="DETable",
+            parameterType="Required",
+            direction="Output")
+
+        historical.value = True
+        rcp45.value = True
+        rcp85.value = True
 
         # Use __file__ attribute to find the .lyr file (assuming the
         #  .pyt and .lyr files exist in the same folder)
         #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
         
-        params = [param0]
+        params = [in_feature_set,individual_features,historical,rcp45,rcp85, outTable]
         return params
 
     def isLicensed(self):
@@ -1105,10 +1139,145 @@ class DataAPI(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        aoi = parameters[0].valueAsText
-        msg = cal.createWKT(aoi)
-        arcpy.AddMessage(msg)
-        msg = cal.returnData(msg)
-        arcpy.AddMessage(msg)
+        features = parameters[0].valueAsText
+        hist = parameters[2].valueAsText
+        rcp45 = parameters[3].valueAsText
+        rcp85 = parameters[4].valueAsText
+        outTable = parameters[5].valueAsText
+
+        #arcpy.AddMessage(outTable)
+        zz = outTable.split('\\')
+        workspace = "/".join(zz[:-1])
+        tableName = zz[-1]
+        #arcpy.AddMessage(outTable1)
+
+        scenarios = []
+        if hist == 'true':
+            scenarios.append('historical')
+        if rcp45 == 'true':
+            scenarios.append('rcp45')
+        if rcp85 == 'true':
+            scenarios.append('rcp85')
+
+        arcpy.AddMessage(scenarios)
+        
+        aoi = cal.createWKT(features)
+        arcpy.AddMessage(aoi)
+        for scenario in scenarios:
+            arcpy.AddMessage(scenario)
+            results = cal.returnData(aoi,scenario)
+            g = cal.createTable(results,workspace,tableName)
+            #g = cal.createTable(outTable)
+        arcpy.AddMessage(g)
+
+        #aprx = arcpy.mp.ArcGISProject("current")
+        #map = aprx.listMaps()[0]
+        #table1 = "%s/%s" % ('D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb','caladapt_data')
+        #arcpy.AddMessage(table1)
+        #addTab = arcpy.mp.Table(table1)
+        #lyrTest = 'D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb/caladapt_data'
+        #arcpy.MakeTableView_management(table1, "caladapt_data")
+        
+        #cal.createChart(g[0],g[1],g[2],g[3])
+            #arcpy.AddMessage(msg)
+
+        return
+#  This function queries the CalAdapy API and shows the data in the tool window
+class CreateChart(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Chart Data from API"
+        self.description = ""
+        self.canRunInBackground = True
+        self.category = "CalAdapt - API"  
+
+    def getParameterInfo(self):
+
+        inTable = arcpy.Parameter(
+            displayName="Output Table",
+            name="outTable",
+            #datatype="DETable",
+            datatype="GPTableView",
+            parameterType="Required",
+            direction="Input")
+
+        dateField = arcpy.Parameter(
+            displayName="Date Field",
+            name="dateField",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        catField = arcpy.Parameter(
+            displayName="Category Field",
+            name="catField",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        valueField = arcpy.Parameter(
+            displayName="Value Field",
+            name="valueField",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        dateField.filter.list = []
+        catField.filter.list = []
+        valueField.filter.list = []
+
+        # Use __file__ attribute to find the .lyr file (assuming the
+        #  .pyt and .lyr files exist in the same folder)
+        #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
+        
+        params = [inTable, dateField, catField, valueField]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+
+        if parameters[0].altered:
+            # If the field is not in the new feature class
+            # then switch to the first field
+            try:
+                li = []
+                m = arcpy.ListFields(parameters[0].valueAsText)
+                for i in m:
+                    print(i.name)
+                    li.append(i.name)
+                parameters[1].filter.list = li
+                parameters[2].filter.list = li
+                parameters[3].filter.list = li
+
+            except:
+                # Could not read the field list
+                parameters[1].value = ""
+
+        return 
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        #parameters[3].clearMessage()
+
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        inTable = parameters[0].valueAsText
+        dateField = parameters[1].valueAsText
+        catField = parameters[2].valueAsText
+        valueField = parameters[3].valueAsText
+
+        zz = inTable.split('\\')
+        tableName = zz[-1]
+                
+        cal.createChart(dateField,catField,valueField,tableName)
 
         return

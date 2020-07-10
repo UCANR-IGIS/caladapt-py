@@ -45,23 +45,21 @@ def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
 
     return [filenameScheme,serverLocation,source]
 
-def returnData(geojson):
+def returnData(wkt, scenario):
     # Query parameters dict
     params = {
         'pagesize': 100,
-        #'g': '{"type":"Point","coordinates":[-121.4687,38.5938]}'
-        'g': geojson
+        'g': wkt,
+        'stat': 'mean'
     }
 
-    print(geojson)
-    url = 'http://api.cal-adapt.org/api/series/tasmax_year_CNRM-CM5_rcp45/rasters/'
+    url = 'http://api.cal-adapt.org/api/series/tasmax_year_CNRM-CM5_%s/rasters/' % (scenario)
 
     # Add HTTP header
     headers = {'ContentType': 'json'}
-
     # Make request
     response = requests.get(url, params=params, headers=headers)
-
+    print(response)
     # It is a good idea to check there were no problems with the request.
     if response.ok:
         data = response.json()
@@ -76,6 +74,67 @@ def returnData(geojson):
             print('year:', item['event'], 'value:', item['image'], item['units'])
 
         return results
+
+def createTable(results, workspace, tableName1):
+    data = results[0]['slug'].split("_")
+
+    dateField = "DateTime"
+    ClimateField = "Value"
+    ClimateDesc1 = 'ClimateDesc'
+    #ClimateField = ClimateField.replace("-", "_")
+
+    arcpy.env.workspace = workspace
+    tableName = '%s/%s' % (workspace,tableName1) 
+    if arcpy.Exists(tableName) == False:
+        arcpy.management.CreateTable(arcpy.env.workspace, tableName1, None, '')
+
+    lstFields = arcpy.ListFields(tableName)
+    dateFieldBool = False
+    ClimateFieldBool = False
+    ClimateDescBool = False
+    
+    for field in lstFields:  
+        if field.name == dateField:  
+            dateFieldBool = True
+        elif field.name == ClimateField:  
+            ClimateFieldBool = True
+        elif field.name == ClimateDesc1:  
+            ClimateDescBool = True
+    
+    if dateFieldBool == False:
+        arcpy.management.AddField(tableName1, dateField, "DATE", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if ClimateDescBool == False:
+        arcpy.management.AddField(tableName1, ClimateDesc1, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if ClimateFieldBool == False:
+        arcpy.management.AddField(tableName1, ClimateField, "DOUBLE", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+
+    cursor = arcpy.da.InsertCursor(tableName, [dateField, ClimateDesc1, ClimateField])
+
+    ClimateDesc = '%s_%s_%s' % (data[0],data[2],data[3])
+    for item in results:
+        row = (item['event'], ClimateDesc, item['image'])
+        #print(row)
+        cursor.insertRow(row)
+        
+    del cursor
+    return [dateField, ClimateDesc1, ClimateField, tableName1]
+
+def createChart(dateField, ClimateDesc1, ClimateField, tableName):
+
+    arcpy.AddMessage([dateField,ClimateDesc1,ClimateField,tableName])
+    aprx = arcpy.mp.ArcGISProject("current")
+    map = aprx.listMaps()[0]
+    caladapt_table = map.listTables(tableName)[0]
+
+    c = arcpy.Chart('MyChart')
+    c.type = 'line'
+    #c.title = 'Population by State'
+    c.xAxis.field = dateField
+    c.yAxis.field = ClimateField
+    c.line.splitCategory = ClimateDesc1
+    #c.xAxis.title = 'State'
+    #c.yAxis.title = 'Total Population'
+    c.addToLayer(caladapt_table)
 
 def createGeoJson(aoi):
     geojson = tempfile.gettempdir() + '/temp.geojson'
@@ -158,8 +217,8 @@ def createWKT(aoi):
 
 #data = returnData()
 t = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Points'
-#u = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Polygons'
-#v = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Polylines'
+u = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Polygons'
+v = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Polylines'
 #x = "D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb/Points_2"
 #y = createGeoJson(x)
 #z = '{"type":"Point","coordinates":[-120.66705243402083,37.607454931529659]}'
