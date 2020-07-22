@@ -1069,6 +1069,12 @@ class GetDataAPI(object):
             datatype="GPBoolean",
             parameterType="Optional",
             direction="Input")
+        catField = arcpy.Parameter(
+            displayName="Category Field",
+            name="catField",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
         historical = arcpy.Parameter(
             displayName="Include Historical",
             name="historical",
@@ -1094,6 +1100,7 @@ class GetDataAPI(object):
             parameterType="Required",
             direction="Output")
 
+        catField.enabled = False
         historical.value = True
         rcp45.value = True
         rcp85.value = True
@@ -1102,7 +1109,7 @@ class GetDataAPI(object):
         #  .pyt and .lyr files exist in the same folder)
         #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
         
-        params = [in_feature_set,individual_features,historical,rcp45,rcp85, outTable]
+        params = [in_feature_set,individual_features,catField,historical,rcp45,rcp85, outTable]
         return params
 
     def isLicensed(self):
@@ -1114,20 +1121,33 @@ class GetDataAPI(object):
         validation is performed.  This method is called whenever a parameter
         has been changed."""
         
-        '''
-        if parameters[1].altered or parameters[2].altered or parameters[3].altered:
-            if parameters[1].value == "Future":
-                arcpy.AddMessage(parameters[2].valueAsText)
-                if int(parameters[2].valueAsText) < 2091 or int(parameters[2].valueAsText) > 2100:
-                    parameters[2].value = ''
-                if int(parameters[3].valueAsText) < 2091 or int(parameters[3].valueAsText) > 2100:
-                    parameters[3].value = ''
-            else:
-                if int(parameters[2].valueAsText) < 1991 or int(parameters[2].valueAsText) > 2000:
-                    parameters[2].value = ''
-                if int(parameters[3].valueAsText) < 1991 or int(parameters[3].valueAsText) > 2000:
-                    parameters[3].value = ''
-        '''
+        if parameters[0].altered:
+            # If the field is not in the new feature class
+            # then switch to the first field
+            try:
+                li = []
+                m = arcpy.ListFields(parameters[0].valueAsText)
+                for i in m:
+                    print(i.name)
+                    li.append(i.name)
+                parameters[2].filter.list = li
+                
+            except:
+                # Could not read the field list
+                parameters[2].value = ""
+
+        if parameters[1].altered:
+            try:
+                if parameters[1].valueAsText == 'true':
+                    parameters[2].enabled = True
+                else:
+                    parameters[2].enabled = False
+                
+            except:
+                # Could not read the field list
+                #parameters[2].value = ""
+                pass
+        
         return
 
     def updateMessages(self, parameters):
@@ -1140,10 +1160,12 @@ class GetDataAPI(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         features = parameters[0].valueAsText
-        hist = parameters[2].valueAsText
-        rcp45 = parameters[3].valueAsText
-        rcp85 = parameters[4].valueAsText
-        outTable = parameters[5].valueAsText
+        splitfeatures = parameters[1].valueAsText
+        catField = parameters[2].valueAsText
+        hist = parameters[3].valueAsText
+        rcp45 = parameters[4].valueAsText
+        rcp85 = parameters[5].valueAsText
+        outTable = parameters[6].valueAsText
 
         #arcpy.AddMessage(outTable)
         zz = outTable.split('\\')
@@ -1158,17 +1180,23 @@ class GetDataAPI(object):
             scenarios.append('rcp45')
         if rcp85 == 'true':
             scenarios.append('rcp85')
-
+        if splitfeatures == 'true':
+            splitfeatures = True
+        else:
+            splitfeatures = False
+            
         arcpy.AddMessage(scenarios)
         
-        aoi = cal.createWKT(features)
-        arcpy.AddMessage(aoi)
-        for scenario in scenarios:
-            arcpy.AddMessage(scenario)
-            results = cal.returnData(aoi,scenario)
-            g = cal.createTable(results,workspace,tableName)
-            #g = cal.createTable(outTable)
-        arcpy.AddMessage(g)
+        aoiArray = cal.createWKT(features, splitfeatures)
+        
+        for aoi in aoiArray:
+            arcpy.AddMessage(aoi)
+            for scenario in scenarios:
+                arcpy.AddMessage(scenario)
+                results = cal.returnData(aoi,scenario)
+                g = cal.createTable(features, results,workspace,tableName,catField)
+                #g = cal.createTable(outTable)
+            arcpy.AddMessage(g)
 
         #aprx = arcpy.mp.ArcGISProject("current")
         #map = aprx.listMaps()[0]

@@ -53,7 +53,10 @@ def returnData(wkt, scenario):
         'stat': 'mean'
     }
 
-    url = 'http://api.cal-adapt.org/api/series/tasmax_year_CNRM-CM5_%s/rasters/' % (scenario)
+    #period = 'month'
+    period = 'year'
+    
+    url = 'http://api.cal-adapt.org/api/series/tasmax_%s_CNRM-CM5_%s/rasters/' % (period, scenario)
 
     # Add HTTP header
     headers = {'ContentType': 'json'}
@@ -75,7 +78,7 @@ def returnData(wkt, scenario):
 
         return results
 
-def createTable(results, workspace, tableName1):
+def createTable(aoi, results, workspace, tableName1, fieldName):
     data = results[0]['slug'].split("_")
 
     dateField = "DateTime"
@@ -92,6 +95,14 @@ def createTable(results, workspace, tableName1):
     dateFieldBool = False
     ClimateFieldBool = False
     ClimateDescBool = False
+    CatFieldBool = False
+
+    fields = arcpy.ListFields(aoi)
+    for field in fields:
+        if field.name == fieldName:
+            # Print field properties
+            fldName = field.name
+            fldType = field.type
     
     for field in lstFields:  
         if field.name == dateField:  
@@ -107,6 +118,9 @@ def createTable(results, workspace, tableName1):
         arcpy.management.AddField(tableName1, ClimateDesc1, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
     if ClimateFieldBool == False:
         arcpy.management.AddField(tableName1, ClimateField, "DOUBLE", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if not fieldName == '':
+        if CatFieldBool == False:
+            arcpy.management.AddField(tableName1, fldName, fldType, None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
 
     cursor = arcpy.da.InsertCursor(tableName, [dateField, ClimateDesc1, ClimateField])
 
@@ -146,7 +160,7 @@ def createGeoJson(aoi):
     
     return t
 
-def createWKT(aoi):
+def createWKT(aoi, splitFeatures=False):
     aoiTemp = tempfile.gettempdir() + "/wkt.shp"
     arcpy.management.Project(aoi, aoiTemp,
                              "GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]")
@@ -154,66 +168,121 @@ def createWKT(aoi):
     # Enter for loop for each feature
     count2 = 0
     wkt = ''
+    wktArray = []
 
     t = arcpy.Describe(aoiTemp)
     shpType = t.shapeType
 
-    if shpType == 'Point':
-        wkt = wkt + 'MULTIPOINT'
-    elif shpType == 'Polygon':
-        wkt = wkt + 'MULTIPOLYGON'
-    elif shpType == 'Polyline':
-        wkt = wkt + 'MULTILINESTRING'
+    if splitFeatures==False:
+        if shpType == 'Point':
+            wkt = wkt + 'MULTIPOINT'
+        elif shpType == 'Polygon':
+            wkt = wkt + 'MULTIPOLYGON'
+        elif shpType == 'Polyline':
+            wkt = wkt + 'MULTILINESTRING'
+        
+        wkt = wkt + ' ('
 
-    wkt = wkt + ' ('
-
-    if shpType == 'Point':
-        count1 = 0
-        for row in arcpy.da.SearchCursor(aoiTemp, ["SHAPE@XY"]):
-            coords = ''
-            x, y = row[0]
-            if count1 == 0:
-                coords = coords + '(%s %s)' % (x, y)
-                count1 = 1
-            else:
-                coords = coords + ',(%s %s)' % (x, y)
-            wkt = wkt + coords
-        wkt = wkt + ")"
-    else:
-        for row in arcpy.da.SearchCursor(aoiTemp, ["OID@", "SHAPE@"]):
-            partnum = 0
+        if shpType == 'Point':
             count1 = 0
-            if shpType == 'Polygon':
-                coords = '(('
-            elif shpType == 'Polyline':
-                coords = '('
-
-            # Step through each part of the feature
-            for part in row[1]:
-                # Step through each vertex in the feature
-                for pnt in part:
-                    if pnt:
-                        if count1 == 0:
-                            coords = coords + '%s %s' % (pnt.X, pnt.Y)
-                            count1 = 1
-                        else:
-                            coords = coords + ',%s %s' % (pnt.X, pnt.Y)
-                    else:
-                        pass
-                    
-            if count2 == 0:
+            for row in arcpy.da.SearchCursor(aoiTemp, ["SHAPE@XY"]):
+                coords = ''
+                x, y = row[0]
+                if count1 == 0:
+                    coords = coords + '(%s %s)' % (x, y)
+                    count1 = 1
+                else:
+                    coords = coords + ',(%s %s)' % (x, y)
                 wkt = wkt + coords
-                count2 = 1
-            else:
-                wkt = wkt + "," + coords
+            wkt = wkt + ")"
+        else:
+            for row in arcpy.da.SearchCursor(aoiTemp, ["OID@", "SHAPE@"]):
+                partnum = 0
+                count1 = 0
+                if shpType == 'Polygon':
+                    coords = '(('
+                elif shpType == 'Polyline':
+                    coords = '('
 
-            if shpType == 'Polygon':
-                wkt = wkt + '))'
+                # Step through each part of the feature
+                #print(row[1])
+                for part in row[1]:
+                    # Step through each vertex in the feature
+                    for pnt in part:
+                        if pnt:
+                            if count1 == 0:
+                                coords = coords + '%s %s' % (pnt.X, pnt.Y)
+                                count1 = 1
+                            else:
+                                coords = coords + ',%s %s' % (pnt.X, pnt.Y)
+                        else:
+                            pass
+
+                if count2 == 0:
+                    wkt = wkt + coords
+                    count2 = 1
+                else:
+                    wkt = wkt + "," + coords
+
+                if shpType == 'Polygon':
+                    wkt = wkt + '))'
+                elif shpType == 'Polyline':
+                    wkt = wkt + ')'
+
+            wkt = wkt + ')'
+        wktArray.append(wkt)
+    else:
+        for row in arcpy.da.SearchCursor(aoiTemp, ["OID@", "SHAPE@","SHAPE@XY"]):
+            #if count1 > 0:
+            wkt = ''
+            if shpType == 'Point':
+                wkt = wkt + 'MULTIPOINT'
+            elif shpType == 'Polygon':
+                wkt = wkt + 'MULTIPOLYGON'
             elif shpType == 'Polyline':
-                wkt = wkt + ')'
+                wkt = wkt + 'MULTILINESTRING'
+        
+            wkt = wkt + ' ('
 
-        wkt = wkt + ')'
-    return wkt
+            if shpType == 'Point':
+                coords = ''
+                x, y = row[2]
+                coords = coords + '(%s %s)' % (x, y)
+                wkt = wkt + coords
+                wkt = wkt + ")"
+            else:
+                partnum = 0
+                if shpType == 'Polygon':
+                    coords = '(('
+                elif shpType == 'Polyline':
+                    coords = '('
+
+                # Step through each part of the feature
+                for part in row[1]:
+                    count1 = 0                    
+                    # Step through each vertex in the feature
+                    for pnt in part:
+                        if pnt:
+                            if count1 == 0:
+                                coords = coords + '%s %s' % (pnt.X, pnt.Y)
+                                count1 = 1
+                            else:
+                                coords = coords + ',%s %s' % (pnt.X, pnt.Y)
+                        else:
+                            pass
+
+                    wkt = wkt + coords
+
+                    if shpType == 'Polygon':
+                        wkt = wkt + '))'
+                    elif shpType == 'Polyline':
+                        wkt = wkt + ')'
+
+                wkt = wkt + ')'
+            #count1 = 1
+            wktArray.append(wkt)
+                
+    return wktArray
 
 #data = returnData()
 t = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Points'
