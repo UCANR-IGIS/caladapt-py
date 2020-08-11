@@ -1073,7 +1073,7 @@ class GetDataAPI(object):
             displayName="Category Field",
             name="catField",
             datatype="GPString",
-            parameterType="Required",
+            parameterType="Optional",
             direction="Input")
         historical = arcpy.Parameter(
             displayName="Include Historical",
@@ -1185,18 +1185,25 @@ class GetDataAPI(object):
         else:
             splitfeatures = False
             
-        arcpy.AddMessage(scenarios)
-        
-        aoiArray = cal.createWKT(features, splitfeatures)
-        
+        #arcpy.AddMessage(scenarios)
+
+        if splitfeatures == False:
+            aoiArray = cal.createWKT(features, splitfeatures)
+        else:
+            aoiArray = cal.createWKT(features, splitfeatures, catField)
+            
         for aoi in aoiArray:
-            arcpy.AddMessage(aoi)
+            aoiTemp = aoi[0]
             for scenario in scenarios:
+                arcpy.AddMessage(aoi)
                 arcpy.AddMessage(scenario)
-                results = cal.returnData(aoi,scenario)
-                g = cal.createTable(features, results,workspace,tableName,catField)
+                #arcpy.AddMessage(aoiTemp)
+                results = cal.returnData(aoiTemp,scenario)
+                g = cal.createTable(results,workspace,tableName,aoi)
                 #g = cal.createTable(outTable)
-            arcpy.AddMessage(g)
+            if (splitfeatures == True):
+                arcpy.AddMessage(aoi[3])
+            #arcpy.AddMessage(g)
 
         #aprx = arcpy.mp.ArcGISProject("current")
         #map = aprx.listMaps()[0]

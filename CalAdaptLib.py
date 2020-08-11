@@ -56,36 +56,39 @@ def returnData(wkt, scenario):
     #period = 'month'
     period = 'year'
     
-    url = 'http://api.cal-adapt.org/api/series/tasmax_%s_CNRM-CM5_%s/rasters/' % (period, scenario)
+    url = 'https://api.cal-adapt.org/api/series/tasmax_%s_CNRM-CM5_%s/rasters/' % (period, scenario)
 
     # Add HTTP header
     headers = {'ContentType': 'json'}
+    
     # Make request
-    response = requests.get(url, params=params, headers=headers)
-    print(response)
+    #response = requests.get(url, params=params, headers=headers)
+    response = requests.post(url, data=params, headers=headers)
+    
+    #print(response)
     # It is a good idea to check there were no problems with the request.
     if response.ok:
         data = response.json()
         # Get a list of Raster Stores
         results = data['results']
-        print('First Raster Store object:')
-        pprint.pprint(results[0])
-        print()
-        print('Timeseries for the grid cell at this point:')
+        #print('First Raster Store object:')
+        #pprint.pprint(results[0])
+        #print()
+        #print('Timeseries for the grid cell at this point:')
         # Iterate through the list and print the event and image property of each Raster Store
-        for item in results:
-            print('year:', item['event'], 'value:', item['image'], item['units'])
-
+        #for item in results:
+            #arcpy.AddMessage(['year:', item['event'], 'value:', item['image'], item['units']])
+            #print(['year:', item['event'], 'value:', item['image'], item['units']])
         return results
 
-def createTable(aoi, results, workspace, tableName1, fieldName):
+def createTable(results, workspace, tableName1, fieldName):
     data = results[0]['slug'].split("_")
 
     dateField = "DateTime"
     ClimateField = "Value"
     ClimateDesc1 = 'ClimateDesc'
-    #ClimateField = ClimateField.replace("-", "_")
-
+    if len(fieldName) > 1:
+        CatField = fieldName[1]
     arcpy.env.workspace = workspace
     tableName = '%s/%s' % (workspace,tableName1) 
     if arcpy.Exists(tableName) == False:
@@ -95,15 +98,9 @@ def createTable(aoi, results, workspace, tableName1, fieldName):
     dateFieldBool = False
     ClimateFieldBool = False
     ClimateDescBool = False
-    CatFieldBool = False
+    if len(fieldName) > 1:
+        CatFieldBool = False
 
-    fields = arcpy.ListFields(aoi)
-    for field in fields:
-        if field.name == fieldName:
-            # Print field properties
-            fldName = field.name
-            fldType = field.type
-    
     for field in lstFields:  
         if field.name == dateField:  
             dateFieldBool = True
@@ -111,22 +108,31 @@ def createTable(aoi, results, workspace, tableName1, fieldName):
             ClimateFieldBool = True
         elif field.name == ClimateDesc1:  
             ClimateDescBool = True
-    
+        if len(fieldName) > 1:
+            if field.name == CatField:  
+                CatFieldBool = True
+                
     if dateFieldBool == False:
         arcpy.management.AddField(tableName1, dateField, "DATE", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
     if ClimateDescBool == False:
         arcpy.management.AddField(tableName1, ClimateDesc1, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
     if ClimateFieldBool == False:
         arcpy.management.AddField(tableName1, ClimateField, "DOUBLE", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
-    if not fieldName == '':
+    if len(fieldName) > 1:
         if CatFieldBool == False:
-            arcpy.management.AddField(tableName1, fldName, fldType, None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+            arcpy.management.AddField(tableName1, fieldName[1], fieldName[2], None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
 
-    cursor = arcpy.da.InsertCursor(tableName, [dateField, ClimateDesc1, ClimateField])
+    if len(fieldName) > 1:
+        cursor = arcpy.da.InsertCursor(tableName,[dateField, ClimateDesc1, ClimateField, fieldName[1]])
+    else:
+        cursor = arcpy.da.InsertCursor(tableName,[dateField, ClimateDesc1, ClimateField])
 
     ClimateDesc = '%s_%s_%s' % (data[0],data[2],data[3])
     for item in results:
-        row = (item['event'], ClimateDesc, item['image'])
+        if len(fieldName) > 1:
+            row = (item['event'], ClimateDesc, item['image'], fieldName[3])
+        else:
+            row = (item['event'], ClimateDesc, item['image'])
         #print(row)
         cursor.insertRow(row)
         
@@ -160,20 +166,40 @@ def createGeoJson(aoi):
     
     return t
 
-def createWKT(aoi, splitFeatures=False):
+def createWKT(aoi, splitFeatures=False, fieldName=''):
+    print(tempfile.gettempdir())
     aoiTemp = tempfile.gettempdir() + "/wkt.shp"
     arcpy.management.Project(aoi, aoiTemp,
                              "GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]")
-
     # Enter for loop for each feature
-    count2 = 0
+    #count2 = 0
     wkt = ''
     wktArray = []
 
     t = arcpy.Describe(aoiTemp)
     shpType = t.shapeType
 
+    if splitFeatures==True:
+        aoiTemp1 = tempfile.gettempdir() + "/wktDissolved.shp"
+        fields = arcpy.ListFields(aoiTemp)
+        for field in fields:
+            if field.name == fieldName:
+                # Print field properties
+                fldName = field.name
+                fldType = field.type
+
+        if shpType == 'Point':
+            fields1 = "Shape;%s" % (fieldName)
+            arcpy.management.DeleteIdentical(aoiTemp, fields1, None, 0)
+        else:
+            arcpy.management.Dissolve(aoiTemp, aoiTemp1, fieldName, None, "MULTI_PART", "DISSOLVE_LINES")
+            aoiTemp = tempfile.gettempdir() + "/wktDissolved.shp"
+    else:
+        fldName = ""
+        fldType = ""
+
     if splitFeatures==False:
+        count2 = 0
         if shpType == 'Point':
             wkt = wkt + 'MULTIPOINT'
         elif shpType == 'Polygon':
@@ -189,10 +215,12 @@ def createWKT(aoi, splitFeatures=False):
                 coords = ''
                 x, y = row[0]
                 if count1 == 0:
-                    coords = coords + '(%s %s)' % (x, y)
+                    #coords = coords + '(%s %s)' % (round(x,4), round(y,4))
+                    coords = coords + '(%s %s)' % (x,y)
                     count1 = 1
                 else:
-                    coords = coords + ',(%s %s)' % (x, y)
+                    #coords = coords + ',(%s %s)' % (round(x,4), round(y,4))
+                    coords = coords + ',(%s %s)' % (x,y)
                 wkt = wkt + coords
             wkt = wkt + ")"
         else:
@@ -211,9 +239,11 @@ def createWKT(aoi, splitFeatures=False):
                     for pnt in part:
                         if pnt:
                             if count1 == 0:
+                                #coords = coords + '%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + '%s %s' % (pnt.X, pnt.Y)
                                 count1 = 1
                             else:
+                                #coords = coords + ',%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + ',%s %s' % (pnt.X, pnt.Y)
                         else:
                             pass
@@ -230,11 +260,21 @@ def createWKT(aoi, splitFeatures=False):
                     wkt = wkt + ')'
 
             wkt = wkt + ')'
-        wktArray.append(wkt)
+        wktArray.append([wkt])
     else:
-        for row in arcpy.da.SearchCursor(aoiTemp, ["OID@", "SHAPE@","SHAPE@XY"]):
+        searchFields = ["OID@","SHAPE@","SHAPE@XY",fieldName]
+        arcpy.AddMessage(searchFields)
+        for row in arcpy.da.SearchCursor(aoiTemp, searchFields):
+            count2 = 0
             #if count1 > 0:
             wkt = ''
+            #if shpType == 'Point':
+            #    wkt = wkt + 'POINT'
+            #elif shpType == 'Polygon':
+            #    wkt = wkt + 'POLYGON'
+            #elif shpType == 'Polyline':
+            #    wkt = wkt + 'LINESTRING'
+
             if shpType == 'Point':
                 wkt = wkt + 'MULTIPOINT'
             elif shpType == 'Polygon':
@@ -247,7 +287,8 @@ def createWKT(aoi, splitFeatures=False):
             if shpType == 'Point':
                 coords = ''
                 x, y = row[2]
-                coords = coords + '(%s %s)' % (x, y)
+                #coords = coords + '(%s %s)' % (round(x,4), round(y,4))
+                coords = coords + '(%s %s)' % (x,y)
                 wkt = wkt + coords
                 wkt = wkt + ")"
             else:
@@ -264,14 +305,20 @@ def createWKT(aoi, splitFeatures=False):
                     for pnt in part:
                         if pnt:
                             if count1 == 0:
+                                #coords = coords + '%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + '%s %s' % (pnt.X, pnt.Y)
                                 count1 = 1
                             else:
+                                #coords = coords + ',%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + ',%s %s' % (pnt.X, pnt.Y)
                         else:
                             pass
 
-                    wkt = wkt + coords
+                    if count2 == 0:
+                        wkt = wkt + coords
+                        count2 = 1
+                    else:
+                        wkt = wkt + "," + coords
 
                     if shpType == 'Polygon':
                         wkt = wkt + '))'
@@ -280,7 +327,7 @@ def createWKT(aoi, splitFeatures=False):
 
                 wkt = wkt + ')'
             #count1 = 1
-            wktArray.append(wkt)
+            wktArray.append([wkt,fldName,fldType,row[3]])
                 
     return wktArray
 
