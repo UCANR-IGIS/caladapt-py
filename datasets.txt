@@ -108,6 +108,7 @@ et_year_vic_models-min_rcp85
 exheat_year_ens32avg_historical
 exheat_year_ens32avg_rcp45
 exheat_year_ens32avg_rcp85
+exheat_year_livneh
 exheatn_year_ens32avg_historical
 exheatn_year_ens32avg_rcp45
 exheatn_year_ens32avg_rcp85
@@ -483,6 +484,10 @@ runoff_wateryear_vic_models-max_rcp85
 runoff_wateryear_vic_models-min_rcp85
 runoff_year_vic_models-max_rcp85
 runoff_year_vic_models-min_rcp85
+rx1day_year_ens32avg_historical
+rx1day_year_ens32avg_rcp45
+rx1day_year_ens32avg_rcp85
+rx1day_year_livneh
 snowfall_month_ACCESS1-0_historical
 snowfall_month_ACCESS1-0_rcp45
 snowfall_month_ACCESS1-0_rcp85

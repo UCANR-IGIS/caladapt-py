@@ -1,4 +1,4 @@
-import arcpy, requests, urllib3, shutil, pprint, tempfile, json
+import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd
 arcpy.env.overwriteOutput = True
  
 def downloadData(baseurl, outLoc, filename):
@@ -330,6 +330,72 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
             wktArray.append([wkt,fldName,fldType,row[3]])
                 
     return wktArray
+
+def getvariables(dataFile, variable="", gcm="", period="", scenario=""):
+    data = pd.read_csv(dataFile, sep=" ", header=None)
+    data.columns = ["StringVariable"]
+    data["counts"] = data.StringVariable.str.count("_")
+    data1 = data[data["counts"] <= 3]
+    data1 = data1['StringVariable'].str.split("_", n = 4, expand = True)
+    data1.columns = ["Variable", "Period", "GCM", "Scenario"]
+        
+    if variable != "":
+        print(variable)
+        data1 = data1[data1.Variable.str.contains(variable)]
+        
+    if period != "":
+        print(period)
+        data1 = data1[data1.Period.str.contains(period)]
+        
+    if gcm != "":
+        print(gcm)
+        data1 = data1[data1.GCM.str.contains(gcm)]
+        
+    if scenario != "":
+        print(scenario)
+        data1 = data1[data1.Scenario.str.contains(scenario)]
+    
+    uniquePeriod = data1.drop_duplicates(subset=['Period'])
+    uniquePeriod = uniquePeriod['Period'].to_list()
+    
+    uniqueGCM = data1.drop_duplicates(subset=['GCM'])
+    uniqueGCM = uniqueGCM['GCM'].to_list()
+    
+    uniqueVariable = data1.drop_duplicates(subset=['Variable'])
+    uniqueVariable = uniqueVariable['Variable'].to_list()
+    
+    uniqueScenario = data1.drop_duplicates(subset=['Scenario'])
+    uniqueScenario = uniqueScenario['Scenario'].to_list()
+    
+    return [uniqueVariable,uniqueGCM,uniquePeriod,uniqueScenario]
+
+def freshResourceList(resourceFile):
+    def file_age(filepath):
+        return time.time() - os.path.getmtime(filepath)
+
+    seconds = file_age(resourceFile) # 7200 seconds
+    minutes = int(seconds) / 60 # 120 minutes
+    hours = minutes / 60 # 2 hours
+    days = hours /24
+    weeks = days/7
+
+    if weeks > 1:
+        arcpy.AddMessage("Refreshing CalAdapt Resource List")
+        # Query parameters dict
+        params = {'name': '', 'pagesize': 100000}
+
+        # Use params with the url.
+        response = requests.get('http://api.cal-adapt.org/api/series/', params=params)
+
+        # It is a good idea to check there were no problems with the request.
+        if response.ok:
+            data = response.json()
+            # Get a list of raster series from results property of data object
+            results = data['results']
+            
+            with open(resourceFile, 'w') as outfile:
+                for item in results:
+                    outfile.write(item['slug'] + "\n")
 
 #data = returnData()
 t = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Points'
