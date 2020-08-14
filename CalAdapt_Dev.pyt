@@ -1,6 +1,7 @@
 import arcpy
 try:
     import arcpy
+    import os
     import requests 
     import urllib3, shutil
     import CalAdaptLib as cal
@@ -1100,6 +1101,47 @@ class GetDataAPI(object):
             parameterType="Required",
             direction="Output")
 
+        
+        libPath = os.path.dirname(cal.__file__)
+        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(resourceFile)
+        rl = cal.getvariables(resourceFile, variable="", gcm="", scenario="", period="")
+
+        variable = arcpy.Parameter(
+            displayName="Variable",
+            name="Variable",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        variable.filter.list = rl[0]
+        #variable.value = ""
+
+        gcm = arcpy.Parameter(
+            displayName="GCM",
+            name="GCM",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        gcm.filter.list = rl[1]
+        #gcm.value = ""
+
+        period = arcpy.Parameter(
+            displayName="Period",
+            name="Period",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        period.filter.list = rl[2]
+        #period.value = ""
+
+        #period = arcpy.Parameter(
+        #    displayName="Period",
+        #    name="Period",
+        #    datatype="GPString",
+        #    parameterType="Required",
+        #    direction="Input")
+        #period.filter.list = rl[3]
+
         catField.enabled = False
         historical.value = True
         rcp45.value = True
@@ -1109,7 +1151,7 @@ class GetDataAPI(object):
         #  .pyt and .lyr files exist in the same folder)
         #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
         
-        params = [in_feature_set,individual_features,catField,historical,rcp45,rcp85, outTable]
+        params = [in_feature_set,individual_features,catField,historical,rcp45,rcp85, outTable, variable, gcm, period]
         return params
 
     def isLicensed(self):
@@ -1148,6 +1190,32 @@ class GetDataAPI(object):
                 #parameters[2].value = ""
                 pass
         
+        #incorporate dropdowns and function
+        if parameters[7].altered:
+            #var = parameters[7].valueAsText
+            #parameters[8].valueAsText
+            #parameters[9].valueAsText
+            # If the field is not in the new feature class
+            # then switch to the first field
+            #try:
+            libPath = os.path.dirname(cal.__file__)
+            resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+            cal.freshResourceList(resourceFile)
+            rl = cal.getvariables(resourceFile, variable=parameters[7].valueAsText, gcm="", scenario="", period="")
+
+            #parameters[7].filter.list = rl[0].sort()
+            parameters[8].filter.list = rl[1]
+            if not parameters[8].valueAsText in rl[1]:
+                parameters[8].value = ""
+            
+            parameters[9].filter.list = rl[2]
+            if not parameters[9].valueAsText in rl[2]:
+                parameters[9].value = ""
+            #except:
+            #    # Could not read the field list
+            #    pass
+            #    #parameters[2].value = ""
+
         return
 
     def updateMessages(self, parameters):

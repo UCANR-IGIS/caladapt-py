@@ -338,34 +338,50 @@ def getvariables(dataFile, variable="", gcm="", period="", scenario=""):
     data1 = data[data["counts"] <= 3]
     data1 = data1['StringVariable'].str.split("_", n = 4, expand = True)
     data1.columns = ["Variable", "Period", "GCM", "Scenario"]
+    data1['Variable'] = data1["Variable"].str.lower()
+    data1['Period'] = data1["Period"].str.lower()
+    data1['GCM'] = data1["GCM"].str.lower()
+    data1['Scenario'] = data1["Scenario"].str.lower()
         
     if variable != "":
-        print(variable)
-        data1 = data1[data1.Variable.str.contains(variable)]
+        #print(variable)
+        #data1 = data1[data1.Variable.str.contains(variable)]
+        data1 = data1[data1['Variable'] == variable]
         
     if period != "":
-        print(period)
-        data1 = data1[data1.Period.str.contains(period)]
+        #print(period)
+        #data1 = data1[data1.Period.str.contains(period)]
+        data1 = data1[data1['Period'] == period]
         
     if gcm != "":
-        print(gcm)
-        data1 = data1[data1.GCM.str.contains(gcm)]
+        #print(gcm)
+        #data1 = data1[data1.GCM.str.contains(gcm)]
+        data1 = data1[data1['GCM'] == gcm]
         
     if scenario != "":
-        print(scenario)
-        data1 = data1[data1.Scenario.str.contains(scenario)]
+        #print(scenario)
+        #data1 = data1[data1.Scenario.str.contains(scenario)]
+        data1 = data1[data1['Scenario'] == scenario]
     
     uniquePeriod = data1.drop_duplicates(subset=['Period'])
     uniquePeriod = uniquePeriod['Period'].to_list()
+    uniquePeriod = [i for i in uniquePeriod if i] 
+    sorted(uniquePeriod)
     
     uniqueGCM = data1.drop_duplicates(subset=['GCM'])
     uniqueGCM = uniqueGCM['GCM'].to_list()
+    uniqueGCM = [i for i in uniqueGCM if i]
+    sorted(uniqueGCM)
     
     uniqueVariable = data1.drop_duplicates(subset=['Variable'])
     uniqueVariable = uniqueVariable['Variable'].to_list()
+    uniqueVariable = [i for i in uniqueVariable if i]
+    sorted(uniqueVariable)
     
     uniqueScenario = data1.drop_duplicates(subset=['Scenario'])
     uniqueScenario = uniqueScenario['Scenario'].to_list()
+    uniqueScenario = [i for i in uniqueScenario if i]
+    sorted(uniqueScenario)
     
     return [uniqueVariable,uniqueGCM,uniquePeriod,uniqueScenario]
 
