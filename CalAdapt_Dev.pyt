@@ -1114,7 +1114,7 @@ class GetDataAPI(object):
             parameterType="Required",
             direction="Input")
         variable.filter.list = rl[0]
-        #variable.value = ""
+        variable.value = ""
 
         gcm = arcpy.Parameter(
             displayName="GCM",
@@ -1123,7 +1123,7 @@ class GetDataAPI(object):
             parameterType="Required",
             direction="Input")
         gcm.filter.list = rl[1]
-        #gcm.value = ""
+        gcm.value = ""
 
         period = arcpy.Parameter(
             displayName="Period",
@@ -1132,7 +1132,14 @@ class GetDataAPI(object):
             parameterType="Required",
             direction="Input")
         period.filter.list = rl[2]
-        #period.value = ""
+        period.value = ""
+
+        vic = arcpy.Parameter(
+            displayName="Include VIC",
+            name="vic",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
 
         #period = arcpy.Parameter(
         #    displayName="Period",
@@ -1143,15 +1150,16 @@ class GetDataAPI(object):
         #period.filter.list = rl[3]
 
         catField.enabled = False
-        historical.value = True
-        rcp45.value = True
-        rcp85.value = True
+        historical.value = False
+        rcp45.value = False
+        rcp85.value = False
+        vic.value = False
 
         # Use __file__ attribute to find the .lyr file (assuming the
         #  .pyt and .lyr files exist in the same folder)
         #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
         
-        params = [in_feature_set,individual_features,catField,historical,rcp45,rcp85, outTable, variable, gcm, period]
+        params = [in_feature_set,individual_features,catField,historical,rcp45,rcp85, outTable, variable, gcm, period, vic]
         return params
 
     def isLicensed(self):
@@ -1163,6 +1171,26 @@ class GetDataAPI(object):
         validation is performed.  This method is called whenever a parameter
         has been changed."""
         
+        if parameters[7].valueAsText:
+            variable1 = parameters[7].valueAsText
+        else:
+            variable1 = ""
+
+        if parameters[8].valueAsText:
+            gcm1 = parameters[8].valueAsText
+        else:
+            gcm1 = ""
+
+        if parameters[9].valueAsText:
+            period1 = parameters[9].valueAsText
+        else:
+            period1 = ""
+
+        libPath = os.path.dirname(cal.__file__)
+        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(resourceFile)
+        rl = cal.getvariables(resourceFile, variable=variable1, gcm=gcm1, scenario="", period=period1)
+
         if parameters[0].altered:
             # If the field is not in the new feature class
             # then switch to the first field
@@ -1191,31 +1219,41 @@ class GetDataAPI(object):
                 pass
         
         #incorporate dropdowns and function
-        if parameters[7].altered:
-            #var = parameters[7].valueAsText
-            #parameters[8].valueAsText
-            #parameters[9].valueAsText
-            # If the field is not in the new feature class
-            # then switch to the first field
-            #try:
-            libPath = os.path.dirname(cal.__file__)
-            resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
-            cal.freshResourceList(resourceFile)
-            rl = cal.getvariables(resourceFile, variable=parameters[7].valueAsText, gcm="", scenario="", period="")
+        #if parameters[7].altered:
+        parameters[8].filter.list = rl[1]
+        if not parameters[8].valueAsText in rl[1]:
+            parameters[8].value = ""
+        parameters[9].filter.list = rl[2]
+        if not parameters[9].valueAsText in rl[2]:
+            parameters[9].value = ""
+        #if parameters[8].altered:
+        parameters[7].filter.list = rl[0]
+        if not parameters[7].valueAsText in rl[0]:
+            parameters[7].value = ""
 
-            #parameters[7].filter.list = rl[0].sort()
-            parameters[8].filter.list = rl[1]
-            if not parameters[8].valueAsText in rl[1]:
-                parameters[8].value = ""
-            
-            parameters[9].filter.list = rl[2]
-            if not parameters[9].valueAsText in rl[2]:
-                parameters[9].value = ""
-            #except:
-            #    # Could not read the field list
-            #    pass
-            #    #parameters[2].value = ""
+        if "rcp45" in rl[3]:
+            parameters[4].enabled = True
+        else:
+            parameters[4].enabled = False
+            parameters[4].value = False
 
+        if "rcp85" in rl[3]:
+            parameters[5].enabled = True
+        else:
+            parameters[5].enabled = False
+            parameters[5].value = False
+
+        if "historical" in rl[3]:
+            parameters[3].enabled = True
+        else:
+            parameters[3].enabled = False
+            parameters[3].value = False
+
+        if "vic" in rl[3]:
+            parameters[10].enabled = True
+        else:
+            parameters[10].enabled = False
+            parameters[10].value = False
         return
 
     def updateMessages(self, parameters):
