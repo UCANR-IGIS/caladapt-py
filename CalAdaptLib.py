@@ -1,4 +1,4 @@
-import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd
+import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd, copy
 arcpy.env.overwriteOutput = True
  
 def downloadData(baseurl, outLoc, filename):
@@ -45,24 +45,22 @@ def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
 
     return [filenameScheme,serverLocation,source]
 
-def returnData(wkt, scenario):
+#def returnData(wkt, scenario, variable, gcm, period, stat, fileName):
+def returnData(wkt, stat, fileName):
     # Query parameters dict
     params = {
-        'pagesize': 100,
+        'pagesize': 1000,
         'g': wkt,
-        'stat': 'mean'
+        'stat': stat
     }
-
-    #period = 'month'
-    period = 'year'
     
-    url = 'https://api.cal-adapt.org/api/series/tasmax_%s_CNRM-CM5_%s/rasters/' % (period, scenario)
-
+    #url = 'https://api.cal-adapt.org/api/series/%s_%s_%s_%s/rasters/' % (variable, period, gcm, scenario)
+    url = 'https://api.cal-adapt.org/api/series/%s/rasters/' % (fileName)
+    arcpy.AddMessage([url, stat])
     # Add HTTP header
     headers = {'ContentType': 'json'}
     
     # Make request
-    #response = requests.get(url, params=params, headers=headers)
     response = requests.post(url, data=params, headers=headers)
     
     #print(response)
@@ -71,26 +69,30 @@ def returnData(wkt, scenario):
         data = response.json()
         # Get a list of Raster Stores
         results = data['results']
-        #print('First Raster Store object:')
-        #pprint.pprint(results[0])
-        #print()
-        #print('Timeseries for the grid cell at this point:')
+
         # Iterate through the list and print the event and image property of each Raster Store
         #for item in results:
             #arcpy.AddMessage(['year:', item['event'], 'value:', item['image'], item['units']])
-            #print(['year:', item['event'], 'value:', item['image'], item['units']])
-        return results
+        return [results, data['count']]
 
-def createTable(results, workspace, tableName1, fieldName):
-    data = results[0]['slug'].split("_")
-
+def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenario, period, stat):
+    #data = results[0][0]['slug'].split("_")
+    #data_count = results[1]
     dateField = "DateTime"
     ClimateField = "Value"
     ClimateDesc1 = 'ClimateDesc'
+    VariableField = 'Variable'
+    GCMField = 'GCM'
+    ScenarioField = 'Scenario'
+    PeriodField = 'Period'
+    UnitsField = 'Units'
+    StatsField = 'Stats'
     if len(fieldName) > 1:
         CatField = fieldName[1]
     arcpy.env.workspace = workspace
-    tableName = '%s/%s' % (workspace,tableName1) 
+    tableName = '%s/%s' % (workspace,tableName1)
+    arcpy.AddMessage([tableName,arcpy.Exists(tableName)])
+
     if arcpy.Exists(tableName) == False:
         arcpy.management.CreateTable(arcpy.env.workspace, tableName1, None, '')
 
@@ -98,6 +100,12 @@ def createTable(results, workspace, tableName1, fieldName):
     dateFieldBool = False
     ClimateFieldBool = False
     ClimateDescBool = False
+    VariableBool = False
+    GCMBool = False
+    ScenarioBool = False
+    PeriodBool = False
+    UnitsBool = False
+    StatsBool = False
     if len(fieldName) > 1:
         CatFieldBool = False
 
@@ -108,34 +116,93 @@ def createTable(results, workspace, tableName1, fieldName):
             ClimateFieldBool = True
         elif field.name == ClimateDesc1:  
             ClimateDescBool = True
+        elif field.name == VariableField:  
+            VariableBool = True
+        elif field.name == GCMField:  
+            GCMBool = True
+        elif field.name == ScenarioField:  
+            ScenarioBool = True
+        elif field.name == PeriodField:  
+            PeriodBool = True
+        elif field.name == UnitsField:  
+            UnitsBool = True
+        elif field.name == StatsField:  
+            StatsBool = True
         if len(fieldName) > 1:
             if field.name == CatField:  
                 CatFieldBool = True
                 
+    if len(fieldName) > 1:
+        if CatFieldBool == False:
+            arcpy.management.AddField(tableName1, fieldName[1], fieldName[2], None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
     if dateFieldBool == False:
         arcpy.management.AddField(tableName1, dateField, "DATE", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if VariableBool == False:
+        arcpy.management.AddField(tableName1, VariableField, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if GCMBool == False:
+        arcpy.management.AddField(tableName1, GCMField, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if ScenarioBool == False:
+        arcpy.management.AddField(tableName1, ScenarioField, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if PeriodBool == False:
+        arcpy.management.AddField(tableName1, PeriodField, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if StatsBool == False:
+        arcpy.management.AddField(tableName1, StatsField, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
     if ClimateDescBool == False:
         arcpy.management.AddField(tableName1, ClimateDesc1, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
     if ClimateFieldBool == False:
         arcpy.management.AddField(tableName1, ClimateField, "DOUBLE", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
-    if len(fieldName) > 1:
-        if CatFieldBool == False:
-            arcpy.management.AddField(tableName1, fieldName[1], fieldName[2], None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
+    if ClimateFieldBool == False:
+        arcpy.management.AddField(tableName1, UnitsField, "TEXT", None, None, None, '', "NULLABLE", "NON_REQUIRED", '')
 
     if len(fieldName) > 1:
-        cursor = arcpy.da.InsertCursor(tableName,[dateField, ClimateDesc1, ClimateField, fieldName[1]])
+        cursor = arcpy.da.InsertCursor(tableName,[fieldName[1], dateField, VariableField, GCMField, ScenarioField, PeriodField, StatsField, ClimateDesc1, ClimateField, UnitsField])
     else:
-        cursor = arcpy.da.InsertCursor(tableName,[dateField, ClimateDesc1, ClimateField])
+        cursor = arcpy.da.InsertCursor(tableName,[dateField, VariableField, GCMField, ScenarioField, PeriodField, StatsField, ClimateDesc1, ClimateField, UnitsField])
 
-    ClimateDesc = '%s_%s_%s' % (data[0],data[2],data[3])
-    for item in results:
-        if len(fieldName) > 1:
-            row = (item['event'], ClimateDesc, item['image'], fieldName[3])
-        else:
-            row = (item['event'], ClimateDesc, item['image'])
-        #print(row)
-        cursor.insertRow(row)
-        
+    ClimateDesc = '%s_%s_%s_%s' % (variable,period,gcm,scenario)
+    #if data_count > 1:
+    if period == 'year':
+        for item in results[0]:
+            if len(fieldName) > 1:
+                row = (fieldName[3], item['event'], variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+            else:
+                row = (item['event'], variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+            cursor.insertRow(row)
+    elif period == 'day':
+        dates = results[0][0]["slug"]
+        i = dates.split("_")
+        dates1 = pd.date_range(start='1/1/' + i[-1][:4], end='12/31/' + i[-1][-4:], freq='D')
+
+        for num, img in enumerate(results[0][0]['image'], start=0):
+            if len(fieldName) > 1:
+                row = (fieldName[3], dates1[num].strftime('%Y-%m-%d'), variable, gcm, scenario, period, stat, ClimateDesc, img, results[0][0]["units"])
+            else:
+                row = (dates1[num].strftime('%Y-%m-%d'), variable, gcm, scenario, period, stat, ClimateDesc, img, results[0][0]["units"])
+            cursor.insertRow(row)
+    elif period == '30yavg':
+        for item in results[0]:
+            dates = item["slug"]
+            i = dates.split("_")
+            j = i[-1]
+            dates1 = '12-31-%s' % (j[:4])
+            #arcpy.AddMessage(dates1)
+            if len(fieldName) > 1:
+                row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+            else:
+                row = (dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+            cursor.insertRow(row)
+    else:
+        for item in results[0]:
+            dates = item["slug"]
+            i = dates.split("_")
+            j = i[-1]
+            dates1 = '%s-%s-%s' % (j[5:7],j[-2:],j[:4])
+            #arcpy.AddMessage(dates1)
+            if len(fieldName) > 1:
+                row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+            else:
+                row = (dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+            cursor.insertRow(row)
     del cursor
     return [dateField, ClimateDesc1, ClimateField, tableName1]
 
@@ -385,6 +452,35 @@ def getvariables(dataFile, variable="", gcm="", period="", scenario=""):
     
     return [uniqueVariable,uniqueGCM,uniquePeriod,uniqueScenario]
 
+def getResourcename(dataFile, variable="", gcm="", period="", scenario=""):
+    data = pd.read_csv(dataFile, sep=" ", header=None)
+    data.columns = ["StringVariable"]
+    data["counts"] = data.StringVariable.str.count("_")
+    data1 = data[data["counts"] <= 3]
+    data1 = data1['StringVariable'].str.split("_", n = 4, expand = True)
+    data1.columns = ["Variable", "Period", "GCM", "Scenario"]
+    data1['Variable'] = data1["Variable"].str.lower()
+    data1['Period'] = data1["Period"].str.lower()
+    data1['GCM'] = data1["GCM"].str.lower()
+    data1['Scenario'] = data1["Scenario"].str.lower()
+    data1 = data1.merge(data, left_index=True, right_index=True)
+        
+    if variable != "":
+        data1 = data1[data1['Variable'] == variable]
+    if period != "":
+        data1 = data1[data1['Period'] == period]
+    if gcm != "":
+        data1 = data1[data1['GCM'] == gcm]
+    if scenario != "":
+        data1 = data1[data1['Scenario'] == scenario]
+    
+    uniqueFilename = data1.drop_duplicates(subset=['StringVariable'])
+    uniqueFilename = uniqueFilename['StringVariable'].to_list()
+    uniqueFilename = [i for i in uniqueFilename if i] 
+    sorted(uniqueFilename)
+    
+    return uniqueFilename
+
 def freshResourceList(resourceFile):
     def file_age(filepath):
         return time.time() - os.path.getmtime(filepath)
@@ -412,11 +508,3 @@ def freshResourceList(resourceFile):
             with open(resourceFile, 'w') as outfile:
                 for item in results:
                     outfile.write(item['slug'] + "\n")
-
-#data = returnData()
-t = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Points'
-u = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Polygons'
-v = 'D:/users/stfeirer/Documents/ArcGIS/Projects/MyProject6/MyProject6.gdb/Polylines'
-#x = "D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb/Points_2"
-#y = createGeoJson(x)
-#z = '{"type":"Point","coordinates":[-120.66705243402083,37.607454931529659]}'

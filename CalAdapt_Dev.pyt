@@ -1076,6 +1076,24 @@ class GetDataAPI(object):
             datatype="GPString",
             parameterType="Optional",
             direction="Input")
+        variable = arcpy.Parameter(
+            displayName="Variable",
+            name="Variable",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        gcm = arcpy.Parameter(
+            displayName="GCM",
+            name="GCM",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        period = arcpy.Parameter(
+            displayName="Period",
+            name="Period",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
         historical = arcpy.Parameter(
             displayName="Include Historical",
             name="historical",
@@ -1094,72 +1112,49 @@ class GetDataAPI(object):
             datatype="GPBoolean",
             parameterType="Required",
             direction="Input")
-        outTable = arcpy.Parameter(
-            displayName="Output Table",
-            name="outTable",
-            datatype="DETable",
-            parameterType="Required",
-            direction="Output")
-
-        
-        libPath = os.path.dirname(cal.__file__)
-        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
-        cal.freshResourceList(resourceFile)
-        rl = cal.getvariables(resourceFile, variable="", gcm="", scenario="", period="")
-
-        variable = arcpy.Parameter(
-            displayName="Variable",
-            name="Variable",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        variable.filter.list = rl[0]
-        variable.value = ""
-
-        gcm = arcpy.Parameter(
-            displayName="GCM",
-            name="GCM",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        gcm.filter.list = rl[1]
-        gcm.value = ""
-
-        period = arcpy.Parameter(
-            displayName="Period",
-            name="Period",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        period.filter.list = rl[2]
-        period.value = ""
-
         vic = arcpy.Parameter(
             displayName="Include VIC",
             name="vic",
             datatype="GPBoolean",
             parameterType="Required",
             direction="Input")
+        stat = arcpy.Parameter(
+            displayName="Aggregate type",
+            name="Stat",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        outTable = arcpy.Parameter(
+            displayName="Output Table",
+            name="outTable",
+            datatype="DETable",
+            parameterType="Required",
+            direction="Output")
+        
+        libPath = os.path.dirname(cal.__file__)
+        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(resourceFile)
+        rl = cal.getvariables(resourceFile, variable="", gcm="", scenario="", period="")
 
-        #period = arcpy.Parameter(
-        #    displayName="Period",
-        #    name="Period",
-        #    datatype="GPString",
-        #    parameterType="Required",
-        #    direction="Input")
-        #period.filter.list = rl[3]
-
+        variable.filter.list = rl[0]
+        variable.value = ""
+        gcm.filter.list = rl[1]
+        gcm.value = ""
+        period.filter.list = rl[2]
+        period.value = ""
         catField.enabled = False
         historical.value = False
         rcp45.value = False
         rcp85.value = False
         vic.value = False
+        stat.filter.list = ['max', 'mean', 'median', 'min', 'sum']
+        stat.value = 'mean'
 
         # Use __file__ attribute to find the .lyr file (assuming the
         #  .pyt and .lyr files exist in the same folder)
         #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
         
-        params = [in_feature_set,individual_features,catField,historical,rcp45,rcp85, outTable, variable, gcm, period, vic]
+        params = [in_feature_set,individual_features,catField,variable,gcm,period,historical,rcp45,rcp85,vic,stat,outTable]
         return params
 
     def isLicensed(self):
@@ -1171,18 +1166,18 @@ class GetDataAPI(object):
         validation is performed.  This method is called whenever a parameter
         has been changed."""
         
-        if parameters[7].valueAsText:
-            variable1 = parameters[7].valueAsText
+        if parameters[3].valueAsText:
+            variable1 = parameters[3].valueAsText
         else:
             variable1 = ""
 
-        if parameters[8].valueAsText:
-            gcm1 = parameters[8].valueAsText
+        if parameters[4].valueAsText:
+            gcm1 = parameters[4].valueAsText
         else:
             gcm1 = ""
 
-        if parameters[9].valueAsText:
-            period1 = parameters[9].valueAsText
+        if parameters[5].valueAsText:
+            period1 = parameters[5].valueAsText
         else:
             period1 = ""
 
@@ -1219,41 +1214,36 @@ class GetDataAPI(object):
                 pass
         
         #incorporate dropdowns and function
-        #if parameters[7].altered:
-        parameters[8].filter.list = rl[1]
-        if not parameters[8].valueAsText in rl[1]:
-            parameters[8].value = ""
-        parameters[9].filter.list = rl[2]
-        if not parameters[9].valueAsText in rl[2]:
-            parameters[9].value = ""
-        #if parameters[8].altered:
-        parameters[7].filter.list = rl[0]
-        if not parameters[7].valueAsText in rl[0]:
-            parameters[7].value = ""
-
-        if "rcp45" in rl[3]:
-            parameters[4].enabled = True
-        else:
-            parameters[4].enabled = False
-            parameters[4].value = False
-
-        if "rcp85" in rl[3]:
-            parameters[5].enabled = True
-        else:
-            parameters[5].enabled = False
-            parameters[5].value = False
-
+        parameters[3].filter.list = rl[0]
+        if not parameters[3].valueAsText in rl[0]:
+            parameters[3].value = ""
+        parameters[4].filter.list = rl[1]
+        if not parameters[4].valueAsText in rl[1]:
+            parameters[4].value = ""
+        parameters[5].filter.list = rl[2]
+        if not parameters[5].valueAsText in rl[2]:
+            parameters[5].value = ""
+            
         if "historical" in rl[3]:
-            parameters[3].enabled = True
+            parameters[6].enabled = True
         else:
-            parameters[3].enabled = False
-            parameters[3].value = False
-
+            parameters[6].enabled = False
+            parameters[6].value = False
+        if "rcp45" in rl[3]:
+            parameters[7].enabled = True
+        else:
+            parameters[7].enabled = False
+            parameters[7].value = False
+        if "rcp85" in rl[3]:
+            parameters[8].enabled = True
+        else:
+            parameters[8].enabled = False
+            parameters[8].value = False
         if "vic" in rl[3]:
-            parameters[10].enabled = True
+            parameters[9].enabled = True
         else:
-            parameters[10].enabled = False
-            parameters[10].value = False
+            parameters[9].enabled = False
+            parameters[9].value = False
         return
 
     def updateMessages(self, parameters):
@@ -1268,10 +1258,19 @@ class GetDataAPI(object):
         features = parameters[0].valueAsText
         splitfeatures = parameters[1].valueAsText
         catField = parameters[2].valueAsText
-        hist = parameters[3].valueAsText
-        rcp45 = parameters[4].valueAsText
-        rcp85 = parameters[5].valueAsText
-        outTable = parameters[6].valueAsText
+        variable1 = parameters[3].valueAsText
+        gcm1 = parameters[4].valueAsText
+        period1 = parameters[5].valueAsText
+        hist = parameters[6].valueAsText
+        rcp45 = parameters[7].valueAsText
+        rcp85 = parameters[8].valueAsText
+        vic = parameters[9].valueAsText
+        stat = parameters[10].valueAsText
+        outTable = parameters[11].valueAsText
+
+        libPath = os.path.dirname(cal.__file__)
+        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(resourceFile)
 
         #arcpy.AddMessage(outTable)
         zz = outTable.split('\\')
@@ -1286,6 +1285,8 @@ class GetDataAPI(object):
             scenarios.append('rcp45')
         if rcp85 == 'true':
             scenarios.append('rcp85')
+        if vic == 'true':
+            scenarios.append('vic')
         if splitfeatures == 'true':
             splitfeatures = True
         else:
@@ -1300,12 +1301,15 @@ class GetDataAPI(object):
             
         for aoi in aoiArray:
             aoiTemp = aoi[0]
-            for scenario in scenarios:
+            for scenario1 in scenarios:
                 arcpy.AddMessage(aoi)
-                arcpy.AddMessage(scenario)
+                arcpy.AddMessage(scenario1)
                 #arcpy.AddMessage(aoiTemp)
-                results = cal.returnData(aoiTemp,scenario)
-                g = cal.createTable(results,workspace,tableName,aoi)
+                CalAdaptFilename = cal.getResourcename(resourceFile, variable=variable1, gcm=gcm1, scenario=scenario1, period=period1)
+                #results = cal.returnData(aoiTemp,scenario1,variable1,gcm1,period1,stat,CalAdaptFilename)
+                results = cal.returnData(aoiTemp,stat,CalAdaptFilename[0])
+                arcpy.AddMessage(results)
+                g = cal.createTable(results,workspace,tableName,aoi, variable1, gcm1, scenario1, period1, stat)
                 #g = cal.createTable(outTable)
             if (splitfeatures == True):
                 arcpy.AddMessage(aoi[3])
