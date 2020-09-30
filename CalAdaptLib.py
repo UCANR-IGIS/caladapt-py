@@ -56,7 +56,7 @@ def returnData(wkt, stat, fileName):
     
     #url = 'https://api.cal-adapt.org/api/series/%s_%s_%s_%s/rasters/' % (variable, period, gcm, scenario)
     url = 'https://api.cal-adapt.org/api/series/%s/rasters/' % (fileName)
-    arcpy.AddMessage([url, stat])
+    #arcpy.AddMessage([url, stat])
     # Add HTTP header
     headers = {'ContentType': 'json'}
     
@@ -91,7 +91,7 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
         CatField = fieldName[1]
     arcpy.env.workspace = workspace
     tableName = '%s/%s' % (workspace,tableName1)
-    arcpy.AddMessage([tableName,arcpy.Exists(tableName)])
+    #arcpy.AddMessage([tableName,arcpy.Exists(tableName)])
 
     if arcpy.Exists(tableName) == False:
         arcpy.management.CreateTable(arcpy.env.workspace, tableName1, None, '')
@@ -164,7 +164,8 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
     if period == 'year':
         for item in results[0]:
             if len(fieldName) > 1:
-                row = (fieldName[3], item['event'], variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+                ClimateDesc2 = '%s_%s' % (ClimateDesc, fieldName[3])
+                row = (fieldName[3], item['event'], variable, gcm, scenario, period, stat, ClimateDesc2, item['image'], item['units'])
             else:
                 row = (item['event'], variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
             cursor.insertRow(row)
@@ -175,7 +176,9 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
 
         for num, img in enumerate(results[0][0]['image'], start=0):
             if len(fieldName) > 1:
-                row = (fieldName[3], dates1[num].strftime('%Y-%m-%d'), variable, gcm, scenario, period, stat, ClimateDesc, img, results[0][0]["units"])
+                ClimateDesc2 = '%s_%s' % (ClimateDesc, fieldName[3])
+                #arcpy.AddMessage(ClimateDesc)
+                row = (fieldName[3], dates1[num].strftime('%Y-%m-%d'), variable, gcm, scenario, period, stat, ClimateDesc2, img, results[0][0]["units"])
             else:
                 row = (dates1[num].strftime('%Y-%m-%d'), variable, gcm, scenario, period, stat, ClimateDesc, img, results[0][0]["units"])
             cursor.insertRow(row)
@@ -187,7 +190,8 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
             dates1 = '12-31-%s' % (j[:4])
             #arcpy.AddMessage(dates1)
             if len(fieldName) > 1:
-                row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+                ClimateDesc2 = '%s_%s' % (ClimateDesc, fieldName[3])
+                row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc2, item['image'], item['units'])
             else:
                 row = (dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
             cursor.insertRow(row)
@@ -199,7 +203,8 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
             dates1 = '%s-%s-%s' % (j[5:7],j[-2:],j[:4])
             #arcpy.AddMessage(dates1)
             if len(fieldName) > 1:
-                row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
+                ClimateDesc2 = '%s_%s' % (ClimateDesc, fieldName[3])
+                row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc2, item['image'], item['units'])
             else:
                 row = (dates1, variable, gcm, scenario, period, stat, ClimateDesc, item['image'], item['units'])
             cursor.insertRow(row)
@@ -208,7 +213,7 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
 
 def createChart(dateField, ClimateDesc1, ClimateField, tableName):
 
-    arcpy.AddMessage([dateField,ClimateDesc1,ClimateField,tableName])
+    #arcpy.AddMessage([dateField,ClimateDesc1,ClimateField,tableName])
     aprx = arcpy.mp.ArcGISProject("current")
     map = aprx.listMaps()[0]
     caladapt_table = map.listTables(tableName)[0]
@@ -330,7 +335,7 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
         wktArray.append([wkt])
     else:
         searchFields = ["OID@","SHAPE@","SHAPE@XY",fieldName]
-        arcpy.AddMessage(searchFields)
+        #arcpy.AddMessage(searchFields)
         for row in arcpy.da.SearchCursor(aoiTemp, searchFields):
             count2 = 0
             #if count1 > 0:

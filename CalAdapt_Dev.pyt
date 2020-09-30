@@ -1271,12 +1271,16 @@ class GetDataAPI(object):
         libPath = os.path.dirname(cal.__file__)
         resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
         cal.freshResourceList(resourceFile)
-
+        
         #arcpy.AddMessage(outTable)
         zz = outTable.split('\\')
         workspace = "/".join(zz[:-1])
         tableName = zz[-1]
+        
         #arcpy.AddMessage(outTable1)
+        arcpy.AddMessage(zz)
+        arcpy.AddMessage(workspace)
+        arcpy.AddMessage(tableName)
 
         scenarios = []
         if hist == 'true':
@@ -1293,6 +1297,9 @@ class GetDataAPI(object):
             splitfeatures = False
             
         #arcpy.AddMessage(scenarios)
+        arcpy.env.workspace = workspace
+        existTest = arcpy.Exists(tableName)
+        arcpy.AddMessage(existTest)
 
         if splitfeatures == False:
             aoiArray = cal.createWKT(features, splitfeatures)
@@ -1325,7 +1332,6 @@ class GetDataAPI(object):
         
         #cal.createChart(g[0],g[1],g[2],g[3])
             #arcpy.AddMessage(msg)
-
         return
 #  This function queries the CalAdapy API and shows the data in the tool window
 class CreateChart(object):
