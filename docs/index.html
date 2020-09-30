@@ -122,14 +122,12 @@
                     <!-- badges: start -->
 
                     <p>See also: <a href="https://ucanr-igis.github.io/caladapt-py/" class="uri">https://ucanr-igis.github.io/caladapt-py/</a></p>
-                    <p><code>caladapt-py</code> is an API client that makes it easier to work with data from <a href="https://cal-adapt.org/">Cal-Adapt.org</a> in Python and ArcGIS. The role of <code>caladapt-py</code> is to bring data into R and provide low-level functions to get it into the shape and format you require:</p>
-                    <p align="center">
-                    </p>
-                    <p><img src="reference/figures/caladapt-py_workflow_630x524x256.png" width="504" height="419"></p>
+                    <p><code>caladapt-py</code> is an API client that makes it easier to work with data from <a href="https://cal-adapt.org/">Cal-Adapt.org</a> in Python and ArcGIS. The role of <code>caladapt-py</code> is to bring data into Pythin and ArcGIS and provide low-level functions to get it into the shape and format you require:</p>
+
 
                     <p><strong>‘Beta’</strong> status means:</p>
-                    <p>1) the package is still under development<br>
-                        2) the package is being updated fairly often<br>
+                    <p>1) the tool is still under development<br>
+                        2) the tool is being updated fairly often<br>
                         3) there’s a possibility that updates will <em>not</em> be backward compatible<br>
                         4) user feedback and input is extremely welcome! (please join the <a href="#caladapt-py-betar-club">caladapt-py beta</a> club)</p>
                     <p><em>Development Status (Aug 2020)</em></p>
@@ -137,22 +135,14 @@
                         <li>
                             <code>caladapt-py</code> only supports Cal-Adapt’s raster data layers (which is most of them). There are no plans at present to support importing station data (i.e., sea level rise).<br>
                         </li>
-                        <li>Currently only temperature and precipitation rasters can be queried (both projected and historic modeled). Variables from the VIC datasets and others will be coming soon.<br>
-                        </li>
                         <li>Retrieving values currently works. Retrieving rasters is not yet supported.<br>
                         </li>
-                        <li>Currently you can query point locations and preset areas of interest. Querying a user-provided polygon will be coming soon.</li>
+                        <li>Currently you can query locations by user-provided points, lines, and polygons.</li>
                     </ul>
                     <div id="installation" class="section level2">
                         <h2 class="hasAnchor">
                             <a href="#installation" class="anchor"></a>Installation</h2>
-                        <p><code>caladapt-py</code> is hosted on <a href="https://github.com/ucanr-igis/caladapt-py">GitHub</a>. To install it, you need to have <a href="https://cran.r-project.org/bin/windows/Rtools/">RTools</a> and the <code>devtools</code> (or <code>remotes</code>) package installed:</p>
-                        <div class="sourceCode" id="cb1">
-                            <pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://devtools.r-lib.org">devtools</a></span>)
-<span class="kw">devtools</span>::<span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span>(<span class="st">"ucanr-igis/caladapt-py"</span>)
-</pre>
-                        </div>
+                        <p><code>caladapt-py</code> is hosted on <a href="https://github.com/ucanr-igis/caladapt-py">GitHub</a>.</p>
                     </div>
                     <div id="general-workflow" class="section level2">
                         <h2 class="hasAnchor">
