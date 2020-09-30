@@ -122,7 +122,7 @@
                     <!-- badges: start -->
 
                     <p>See also: <a href="https://ucanr-igis.github.io/caladapt-py/" class="uri">https://ucanr-igis.github.io/caladapt-py/</a></p>
-                    <p><code>caladapt-py</code> is an API client that makes it easier to work with data from <a href="https://cal-adapt.org/">Cal-Adapt.org</a> in Python and ArcGIS. The role of <code>caladapt-py</code> is to bring data into Pythin and ArcGIS and provide low-level functions to get it into the shape and format you require:</p>
+                    <p><code>caladapt-py</code> is an API client that makes it easier to work with data from <a href="https://cal-adapt.org/">Cal-Adapt.org</a> in Python and ArcGIS. The role of <code>caladapt-py</code> is to bring data into Python and ArcGIS and provide low-level functions to get it into the shape and format you require:</p>
 
 
                     <p><strong>‘Beta’</strong> status means:</p>
@@ -160,54 +160,13 @@
                         <div class="sourceCode" id="cb2">
                             <pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/ucanr-igis/caladapt-py">caladapt-py</a></span>)
-<span class="co">#&gt; Cal-Adapt R (version 0.2.9)</span>
-<span class="co">#&gt; URL: https://github.com/ucanr-igis/caladapt-py</span>
-<span class="co">#&gt; Bug reports: caladapt-py@gmail.com</span>
 </pre>
                         </div>
                         <p>2) Next, create an <strong>API request object</strong> for a point location. This doesn’t actually fetch any data, it puts together the pieces pieces of an API request. There are a number of ‘<em>constructor</em>’ functions you can mix and match to create an API request object, for example:</p>
                         <!-- end list -->
                         <div class="sourceCode" id="cb3">
                             <pre class="downlit">
-<span class="kw">cap1</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ca_loc_pt.html">ca_loc_pt</a></span>(coords = <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="op">-</span><span class="fl">121.4687</span>, <span class="fl">38.5938</span>)) <span class="op">%&gt;%</span>  <span class="co">## specify a location</span>
-  <span class="fu"><a href="reference/ca_gcm.html">ca_gcm</a></span>(<span class="kw">gcms</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">4</span>]) <span class="op">%&gt;%</span>                                <span class="co">## select GCM(s)</span>
-  <span class="fu"><a href="reference/ca_scenario.html">ca_scenario</a></span>(<span class="kw">scenarios</span>[<span class="fl">1</span><span class="op">:</span><span class="fl">2</span>]) <span class="op">%&gt;%</span>                      <span class="co">## select emission scenarios(s)</span>
-  <span class="fu"><a href="reference/ca_period.html">ca_period</a></span>(<span class="st">"year"</span>) <span class="op">%&gt;%</span>                                <span class="co">## select a precooked temporal aggregation period</span>
-  <span class="fu"><a href="reference/ca_years.html">ca_years</a></span>(start = <span class="fl">2040</span>, end = <span class="fl">2060</span>) <span class="op">%&gt;%</span>               <span class="co">## select start and end dates</span>
-  <span class="fu"><a href="reference/ca_cvar.html">ca_cvar</a></span>(<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"tasmax"</span>, <span class="st">"tasmin"</span>))                       <span class="co">## select climate variables</span>
 
-<span class="kw">cap1</span>
-<span class="co">#&gt; Cal-Adapt API Request</span>
-<span class="co">#&gt; Location(s): </span>
-<span class="co">#&gt;   x: -121.469</span>
-<span class="co">#&gt;   y: 38.594</span>
-<span class="co">#&gt; Variable(s): tasmax, tasmin</span>
-<span class="co">#&gt; Temporal aggregration period(s): year</span>
-<span class="co">#&gt; GCM(s): HadGEM2-ES, CNRM-CM5, CanESM2, MIROC5</span>
-<span class="co">#&gt; Scenario(s): rcp45, rcp85</span>
-<span class="co">#&gt; Dates: 2040-01-01 to 2060-01-01</span>
-<span class="co">#&gt; Options: NA</span>
-</pre>
-                        </div>
-                        <p>To help you pass arguments for the various constructor functions, <code>caladpatr</code> provides the following constants:</p>
-                        <div class="sourceCode" id="cb4">
-                            <pre class="downlit">
-<span class="kw">climvars</span>
-<span class="co">#&gt; [1] "tasmax" "tasmin" "pr"     "swe"</span>
-
-<span class="kw">gcms</span>
-<span class="co">#&gt;  [1] "HadGEM2-ES" "CNRM-CM5"   "CanESM2"    "MIROC5"     "ACCESS1-0" </span>
-<span class="co">#&gt;  [6] "CCSM4"      "CESM1-BGC"  "CMCC-CMS"   "GFDL-CM3"   "HadGEM2-CC"</span>
-<span class="co">#&gt; [11] "ens32avg"   "ens32max"   "ens32min"</span>
-
-<span class="co">## Note the first four GCMs are the 'priority' models recommended under </span>
-<span class="co">## California's 4th Climate Change Assessment.</span>
-
-<span class="kw">scenarios</span>
-<span class="co">#&gt; [1] "rcp45"      "rcp85"      "historical"</span>
-
-<span class="kw">periods</span>
-<span class="co">#&gt; [1] "day"    "month"  "year"   "30yavg"</span>
 </pre>
                         </div>
                         <p><strong>Note</strong>: Cal-Adapt has data for many but by no means all permutations of the above constants.</p>
@@ -215,19 +174,7 @@
                         <!-- end list -->
                         <div class="sourceCode" id="cb5">
                             <pre class="downlit">
-<span class="kw">cap1_vals_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ca_getvals.html">ca_getvals</a></span>(<span class="kw">cap1</span>, quiet = <span class="fl">TRUE</span>) <span class="op">%&gt;%</span> <span class="fu"><a href="reference/ca_vals2tbl.html">ca_vals2tbl</a></span>()
-<span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span>(<span class="kw">cap1_vals_df</span>)
-<span class="co">#&gt; [1] 336   7</span>
-<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span>(<span class="kw">cap1_vals_df</span>)
-<span class="co">#&gt; # A tibble: 6 x 7</span>
-<span class="co">#&gt;   feat_id cvar   period gcm        scenario dt              val</span>
-<span class="co">#&gt;   &lt;fct&gt;   &lt;fct&gt;  &lt;fct&gt;  &lt;fct&gt;      &lt;fct&gt;    &lt;chr&gt;           [K]</span>
-<span class="co">#&gt; 1 1       tasmax year   HadGEM2-ES rcp45    2040-01-01 298.7698</span>
-<span class="co">#&gt; 2 1       tasmax year   HadGEM2-ES rcp45    2041-01-01 298.7150</span>
-<span class="co">#&gt; 3 1       tasmax year   HadGEM2-ES rcp45    2042-01-01 298.5987</span>
-<span class="co">#&gt; 4 1       tasmax year   HadGEM2-ES rcp45    2043-01-01 299.6766</span>
-<span class="co">#&gt; 5 1       tasmax year   HadGEM2-ES rcp45    2044-01-01 299.5327</span>
-<span class="co">#&gt; 6 1       tasmax year   HadGEM2-ES rcp45    2045-01-01 298.2451</span>
+
 </pre>
                         </div>
                         <p>For more examples, including retrieving data for a preset area-of-interest (i.e., census tracts), see the ‘Jupyter Notebooks’ menu on the <a href="https://ucanr-igis.github.io/caladapt-py/">website</a>.</p>
