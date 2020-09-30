@@ -38,7 +38,7 @@ h3 {
 
 # About this R Notebook
 
-R Notebooks are a 'flavor' of R markdown that combine plain text and R commands in code chunks. (You can download the Rmd file from the 'code' button at the top of the page.) You run code chunks in the document line-by-line, and the output appears immediately below the code chunk.
+Jupyter Notebooks are a 'flavor' of R markdown that combine plain text and R commands in code chunks. (You can download the Rmd file from the 'code' button at the top of the page.) You run code chunks in the document line-by-line, and the output appears immediately below the code chunk.
 
 If you're in RStudio, you can *minimize the console window* (and probably close the right-hand panes as well). You won't need it,  because when you run R commands in a R Notebook the *output appears below the code chunk* (not the console). This takes some getting used to.
 
