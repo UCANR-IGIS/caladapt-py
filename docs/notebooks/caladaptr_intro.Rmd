@@ -34,7 +34,7 @@ h3 {
 
 ```
 
-<p style="text-align:right;"><img src="https://ucanr-igis.github.io/caladaptr/reference/figures/caladaptr-beta_logo.svg" width="240" /></p>
+<p style="text-align:right;"><img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/caladapt-py-beta_logo.svg" width="240" /></p>
 
 # About this R Notebook
 
@@ -57,16 +57,16 @@ pkgs_missing <- pkgs_req[!(pkgs_req %in% installed.packages()[,"Package"])]
 if (length(pkgs_missing)) install.packages(pkgs_missing, dependencies=TRUE)
 ```
 
-Install caladaptr:
+Install caladapt-py:
 
 ```{r}
-# remotes::install_github("ucanr-igis/caladaptr")
+# remotes::install_github("ucanr-igis/caladapt-py")
 ```
 
 Now we can load all the required libraries:
 
 ```{r library_all}
-library(caladaptr, quietly = TRUE)
+library(caladapt-py, quietly = TRUE)
 library(units, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(dplyr, quietly = TRUE)
