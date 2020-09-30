@@ -34,7 +34,7 @@ h3 {
 
 ```
 
-<p style="text-align:right;"><img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/caladapt-py-beta_logo.svg" width="240" /></p>
+<p style="text-align:right;"><img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/caladaptpy-beta_logo.svg" width="240" /></p>
 
 # About this R Notebook
 
