@@ -186,7 +186,7 @@ aoipreset_types
 
 ## Verify the name (or id) of the desired feature(s) in the AOI Preset 
 
-To use an AOI Preset, you need to provide the name(s) or id(s) of the feature(s) you want to query. The specific columns available for identifying features vary by each preset. You can view the columns and values for an AOI Preset using the built-in `aoipreset_idval` constant. For example the counties layer allows you to specify a county by name, fips code, or id. Remember that everything in R is case-sensitive!
+To use an AOI Preset, you need to provide the name(s) or id(s) of the feature(s) you want to query. The specific columns available for identifying features vary by each preset. You can view the columns and values for an AOI Preset using the built-in `aoipreset_idval` constant. For example the counties layer allows you to specify a county by name, fips code, or id. Remember that everything in Python is case-sensitive!
 
 ```{r idval_counties, cache = TRUE}
 aoipreset_idval$counties
