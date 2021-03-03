@@ -228,15 +228,15 @@ def createChart(dateField, ClimateDesc1, ClimateField, tableName):
     #c.yAxis.title = 'Total Population'
     c.addToLayer(caladapt_table)
 
-def createGeoJson(aoi):
-    geojson = tempfile.gettempdir() + '/temp.geojson'
-    arcpy.conversion.FeaturesToJSON(aoi, geojson, "NOT_FORMATTED",
-                                    "NO_Z_VALUES", "NO_M_VALUES", "GEOJSON", "WGS84", "USE_FIELD_NAME")
-    f = open(geojson, "r")
-    t = f.read()
-    f.close()
-    
-    return t
+#def createGeoJson(aoi):
+#    geojson = tempfile.gettempdir() + '/temp.geojson'
+#    arcpy.conversion.FeaturesToJSON(aoi, geojson, "NOT_FORMATTED",
+#                                    "NO_Z_VALUES", "NO_M_VALUES", "GEOJSON", "WGS84", "USE_FIELD_NAME")
+#    f = open(geojson, "r")
+#    t = f.read()
+#    f.close()
+#    
+#    return t
 
 def createWKT(aoi, splitFeatures=False, fieldName=''):
     print(tempfile.gettempdir())
