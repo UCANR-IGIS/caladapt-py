@@ -130,23 +130,29 @@
                         2) the tool is being updated fairly often<br>
                         3) there’s a possibility that updates will <em>not</em> be backward compatible<br>
                         4) user feedback and input is extremely welcome! (please join the <a href="#caladapt-py-betar-club">caladapt-py beta</a> club)</p>
-                    <p><em>Development Status (Aug 2020)</em></p>
+                    <p><em>Development Status (Feb 2021)</em></p>
                     <ul>
                         <li>
                             <code>caladapt-py</code> only supports Cal-Adapt’s raster data layers (which is most of them). There are no plans at present to support importing station data (i.e., sea level rise).<br>
                         </li>
-                        <li>Retrieving values currently works. Retrieving rasters is not yet supported.<br>
-                        </li>
+                        <li>Retrieving values currently works. Retrieving rasters is not yet supported.</li>
+                        <li>Currently you can download the source netcdf data used in CalAdapt.</li>
                         <li>Currently you can query locations by user-provided points, lines, and polygons.</li>
                     </ul>
                     <div id="installation" class="section level2">
                         <h2 class="hasAnchor">
                             <a href="#installation" class="anchor"></a>Installation</h2>
-                        <p><code>caladapt-py</code> is hosted on <a href="https://github.com/ucanr-igis/caladapt-py">GitHub</a>.</p>
+                        <p><code>caladapt-py</code> is hosted on <a href="https://github.com/ucanr-igis/caladapt-py">GitHub</a>. To install, download the zip from github and place in your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use tools in the toolbox. For Python, import the libarary and use the different modules as needed.</p>
                     </div>
                     <div id="general-workflow" class="section level2">
                         <h2 class="hasAnchor">
                             <a href="#general-workflow" class="anchor"></a>General Workflow</h2>
+                        <h3>Python (Jupyter Notebook)</h3>
+                        <p>In general, there are three steps to getting data via the Cal-Adapt API:</p>
+                        <p>1) Create a ‘Cal-Adapt API Request’ object</p>
+                        <p>2) Feed the API Request object into a function that fetches data (either values or rasters*)</p>
+                        <p>3) Massage the data that comes back into the format you require (e.g., a data frame or clipped raster)</p>
+                        <h3>ArcGIS Python Toolbox</h3>
                         <p>In general, there are three steps to getting data via the Cal-Adapt API:</p>
                         <p>1) Create a ‘Cal-Adapt API Request’ object</p>
                         <p>2) Feed the API Request object into a function that fetches data (either values or rasters*)</p>

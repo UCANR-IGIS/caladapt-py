@@ -561,7 +561,7 @@ class Livneh_vic_Data(object):
             filename = filenameScheme % (variable, yearVar)
             status = cal.downloadData(baseurl, outLoc, filename)
             if status == 200:
-                break
+                pass
             arcpy.AddMessage([baseurl, outLoc, filename])
         return
     
@@ -689,10 +689,11 @@ class Loca_vic_Data(object):
         years = range(int(parameters[3].valueAsText),year2)
         
         for yearVar in years:
+            arcpy.AddMessage(yearVar)
             filename = filenameScheme % (variable, yearVar)
             status = cal.downloadData(url, outLoc, filename)
             if status == 200:
-                break
+                pass
             arcpy.AddMessage([url, outLoc, filename])
         return
 
