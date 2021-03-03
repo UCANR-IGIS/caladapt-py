@@ -32,7 +32,7 @@ shape and format you require:
     compatible  
 4)  user feedback and input is welcome
 
-*Development Status (Aug 2020)*
+*Development Status (Feb 2021)*
 
   - `caladapt-py` only supports Cal-Adapt’s raster data layers (which is
     most of them). There are no plans at present to support importing
