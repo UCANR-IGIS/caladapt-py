@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# caladaptR <img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/caladaptpy-beta_logo.svg" align="right" width="240" />
+# caladapt-py <img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/caladaptpy-beta_logo.svg" align="right" width="240" />
 
 <!-- badges: start -->
 
@@ -9,11 +9,11 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-See also: <https://ucanr-igis.github.io/caladaptr/>
+See also: <https://ucanr-igis.github.io/caladapt-py/>
 
-`caladaptr` is an API client that makes it easier to work with data from
-[Cal-Adapt.org](https://cal-adapt.org/) in R. The role of `caladaptr` is
-to bring data into R and provide low-level functions to get it into the
+`caladapt-py` is an API client that makes it easier to work with data from
+[Cal-Adapt.org](https://cal-adapt.org/) in Python and ArcGIS. The role of `caladapt-py` is
+to bring data into Python and ArcGIS and provide low-level functions to get it into the
 shape and format you require:
 
 <p align="center">
@@ -30,33 +30,25 @@ shape and format you require:
 2)  the package is being updated fairly often  
 3)  there’s a possibility that updates will *not* be backward
     compatible  
-4)  user feedback and input is extremely welcome\! (please join the
-    [caladaptR betaR](#caladaptr-betar-club) club)
+4)  user feedback and input is welcome
 
 *Development Status (Aug 2020)*
 
-  - `caladaptr` only supports Cal-Adapt’s raster data layers (which is
+  - `caladapt-py` only supports Cal-Adapt’s raster data layers (which is
     most of them). There are no plans at present to support importing
-    station data (i.e., sea level rise).  
-  - Currently only temperature and precipitation rasters can be queried
-    (both projected and historic modeled). Variables from the VIC
-    datasets and others will be coming soon.  
+    station data (i.e., sea level rise).
   - Retrieving values currently works. Retrieving rasters is not yet
-    supported.  
-  - Currently you can query point locations and preset areas of
-    interest. Querying a user-provided polygon will be coming soon.
+    supported. 
+  - Currently you can download the source netcdf data used in CalAdapt
+  - Currently you can query locations by user-provided points, lines, and polygons.
 
 ## Installation
 
-`caladaptr` is hosted on
-[GitHub](https://github.com/ucanr-igis/caladaptr). To install it, you
-need to have [RTools](https://cran.r-project.org/bin/windows/Rtools/)
-and the `devtools` (or `remotes`) package installed:
-
-``` r
-library(devtools)
-devtools::install_github("ucanr-igis/caladaptr")
-```
+`caladapt-py` is hosted on
+[GitHub](https://github.com/ucanr-igis/caladapt-py).
+To install, download the zip from github and place in your project folder.
+For ArcGIs, load the python toolbox into your ArcGIS Project and use tools in the toolbox.
+For Python, import the libarary and use the different modules as needed.
 
 ## General Workflow
 
@@ -176,21 +168,3 @@ the [website](https://ucanr-igis.github.io/caladaptr/).
   - Don’t need every single column in your output dataframe?
     `ca_vals2tbl()` provides arguments to specify which column(s) to
     return.
-
-# caladaptR betaR club
-
-The **caladaptR betaR** club is **now accepting members\!** If you would
-like to be part of this elite cadre of `caladaptr` early adopters, you
-should join our beta testing program. Benefits of joining the
-**caladaptR betaR** club include:
-
-  - early notification of **package updates**  
-  - 24/7 **priority support**  
-  - **exclusive invitations** to `caladaptr` tutorials and user feedback
-    sessions
-  - an **email forum** to bounce ideas around with other caladaptR users
-    and the package developer
-
-To join the **caladaptR betaR** club, please subscribe yourself to the
-[caladaptR email
-list](https://lists.ucdavis.edu/sympa/subscribe/caladaptr).
