@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# caladaptR <img src="man/figures/caladaptr-beta_logo.svg" align="right" width="240" />
+# caladaptR <img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/caladaptpy-beta_logo.svg" align="right" width="240" />
 
 <!-- badges: start -->
 
