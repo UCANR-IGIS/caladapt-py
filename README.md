@@ -16,14 +16,6 @@ See also: <https://ucanr-igis.github.io/caladapt-py/>
 to bring data into Python and ArcGIS and provide low-level functions to get it into the
 shape and format you require:
 
-<p align="center">
-
-<img src="man/figures/caladaptr_workflow_630x524x256.png" width="504" height="419"/>
-
-</p>
-
-  
-
 **‘Beta’** status means:
 
 1)  the package is still under development  
@@ -47,7 +39,7 @@ shape and format you require:
 `caladapt-py` is hosted on
 [GitHub](https://github.com/ucanr-igis/caladapt-py).
 To install, download the zip from github and place in your project folder.
-For ArcGIs, load the python toolbox into your ArcGIS Project and use tools in the toolbox.
+For ArcGIS, load the python toolbox into your ArcGIS Project and use tools in the toolbox.
 For Python, import the libarary and use the different modules as needed.
 
 ## General Workflow
