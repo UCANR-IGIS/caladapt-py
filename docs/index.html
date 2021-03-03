@@ -158,18 +158,16 @@
                         <p>2) Feed the API Request object into a function that fetches data (either values or rasters*)</p>
                         <p>3) Massage the data that comes back into the format you require (e.g., a data frame or clipped raster)</p>
                     </div>
-                    <div id="sample-usage-get-annual-projected-temperature-at-a-point-location" class="section level2">
+                    <!--<div id="sample-usage-get-annual-projected-temperature-at-a-point-location" class="section level2">
                         <h2 class="hasAnchor">
                             <a href="#sample-usage-get-annual-projected-temperature-at-a-point-location" class="anchor"></a>Sample Usage: Get Annual Projected Temperature at a Point Location</h2>
                         <p>1) Load the package:</p>
-                        <!-- end list -->
                         <div class="sourceCode" id="cb2">
                             <pre class="downlit">
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/ucanr-igis/caladapt-py">caladapt-py</a></span>)
 </pre>
                         </div>
                         <p>2) Next, create an <strong>API request object</strong> for a point location. This doesn’t actually fetch any data, it puts together the pieces pieces of an API request. There are a number of ‘<em>constructor</em>’ functions you can mix and match to create an API request object, for example:</p>
-                        <!-- end list -->
                         <div class="sourceCode" id="cb3">
                             <pre class="downlit">
 
@@ -177,7 +175,6 @@
                         </div>
                         <p><strong>Note</strong>: Cal-Adapt has data for many but by no means all permutations of the above constants.</p>
                         <p>3) Next, feed your API call into a function that <strong>fetches data</strong>, such as <code><a href="reference/ca_getvals.html">ca_getvals()</a></code>.</p>
-                        <!-- end list -->
                         <div class="sourceCode" id="cb5">
                             <pre class="downlit">
 
@@ -216,61 +213,61 @@
                         <li>an <strong>email forum</strong> to bounce ideas around with other caladapt-py users and the package developer</li>
                     </ul>
                     <p>To join the <strong>caladapt-py beta</strong> club, please subscribe yourself to the <a href="https://lists.ucdavis.edu/sympa/subscribe/caladapt-py">caladapt-py email list</a>.</p>
+                </div>-->
+
                 </div>
 
+                <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+                    <div class="links">
+                        <h2>Links</h2>
+                        <ul class="list-unstyled">
+                            <li>Browse source code at <br><a href="https://github.com/ucanr-igis/caladapt-py/">https://​github.com/​ucanr-igis/​caladapt-py/​</a>
+                            </li>
+                            <li>Report a bug at <br><a href="https://github.com/ucanr-igis/caladapt-py/issues">https://​github.com/​ucanr-igis/​caladapt-py/​issues</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="license">
+                        <h2>License</h2>
+                        <ul class="list-unstyled">
+                            <li><a href="LICENSE.html">Full license</a></li>
+                            <li><small><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></small></li>
+                        </ul>
+                    </div>
+                    <div class="citation">
+                        <h2>Citation</h2>
+                        <ul class="list-unstyled">
+                            <li><a href="authors.html">Citing caladapt-py</a></li>
+                        </ul>
+                    </div>
+                    <div class="developers">
+                        <h2>Developers</h2>
+                        <ul class="list-unstyled">
+                            <li>Shane T. Feirer <br><small class="roles"> Author, maintainer </small> </li>
+                        </ul>
+                    </div>
+
+                    <div class="dev-status">
+                        <h2>Dev status</h2>
+                        <ul class="list-unstyled">
+                            <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
-                <div class="links">
-                    <h2>Links</h2>
-                    <ul class="list-unstyled">
-                        <li>Browse source code at <br><a href="https://github.com/ucanr-igis/caladapt-py/">https://​github.com/​ucanr-igis/​caladapt-py/​</a>
-                        </li>
-                        <li>Report a bug at <br><a href="https://github.com/ucanr-igis/caladapt-py/issues">https://​github.com/​ucanr-igis/​caladapt-py/​issues</a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="license">
-                    <h2>License</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="LICENSE.html">Full license</a></li>
-                        <li><small><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></small></li>
-                    </ul>
-                </div>
-                <div class="citation">
-                    <h2>Citation</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="authors.html">Citing caladapt-py</a></li>
-                    </ul>
-                </div>
-                <div class="developers">
-                    <h2>Developers</h2>
-                    <ul class="list-unstyled">
-                        <li>Shane T. Feirer <br><small class="roles"> Author, maintainer </small> </li>
-                    </ul>
+
+            <footer>
+                <div class="copyright">
+                    <p>Developed by Shane T. Feirer.</p>
                 </div>
 
-                <div class="dev-status">
-                    <h2>Dev status</h2>
-                    <ul class="list-unstyled">
-                        <li><a href="https://www.tidyverse.org/lifecycle/#experimental"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
-                    </ul>
+                <div class="pkgdown">
+                    <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
                 </div>
-            </div>
+
+            </footer>
         </div>
-
-
-        <footer>
-            <div class="copyright">
-                <p>Developed by Shane T. Feirer.</p>
-            </div>
-
-            <div class="pkgdown">
-                <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.5.1.9000.</p>
-            </div>
-
-        </footer>
-    </div>
 
 
 
