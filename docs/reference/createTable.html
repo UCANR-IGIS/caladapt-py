@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Manage Cache Directory — ca_getcache • caladapt-py</title>
+    <title>createTable • caladapt-py</title>
 
 
     <!-- jquery -->
@@ -141,18 +141,16 @@
         <div class="row">
             <div class="col-md-9 contents">
                 <div class="page-header">
-                    <h1>Manage Cache Directory</h1>
-                    <small class="dont-index">Source: <a href='https://github.com/ucanr-igis/caladapt-py/blob/master/R/ca_cache.R'><code>R/ca_cache.R</code></a></small>
-                    <div class="hidden name"><code>ca_getcache.Rd</code></div>
+                    <h1>Creates a data table and populates with data from the CalAdapt API</h1>
+                    <small class="dont-index">Source: <a href='https://github.com/UCANR-IGIS/caladapt-py/blob/master/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
+                    <div class="hidden name"><code>CalAdaptLib.py</code></div>
                 </div>
 
                 <div class="ref-description">
-                    <p>View and set the directory for the data catalog</p>
+                    <p>Creates a table using the arcpy library and populates the table with the results from the CalAdapt API</p>
                 </div>
 
-                <pre class="usage"><span class='fu'>ca_getcache</span>(default = <span class='fl'>TRUE</span>, quiet = <span class='fl'>TRUE</span>)
-
-<span class='fu'>ca_setcache</span>(<span class='kw'>cache_dir</span>, make_dir = <span class='fl'>FALSE</span>, write = <span class='fl'>TRUE</span>, quiet = <span class='fl'>FALSE</span>)</pre>
+                <pre class="usage"><span class='fu'>createTable</span>(results, workspace, tableName, fieldName, variable, gcm, scenario, period, stat)</pre>
 
                 <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
                 <table class="ref-arguments">
@@ -161,58 +159,78 @@
                         <col class="desc" />
                     </colgroup>
                     <tr>
-                        <th>default</th>
+                        <th>results</th>
                         <td>
-                            <p>Use a default cache directory if no other has been set</p>
+                            <p>Result from the CalAdapt API request in JSON format</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>quiet</th>
+                        <th>workspace</th>
                         <td>
-                            <p>Suppress messages</p>
+                            <p>Workspace where you would like the table (folder or File Geodatabase)</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>cache_dir</th>
+                        <th>tableName</th>
                         <td>
-                            <p>The directory for cached data, can also be 'default' to use the default location</p>
+                            <p>Name of table to create</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>make_dir</th>
+                        <th>fieldName</th>
                         <td>
-                            <p>Make the directory if needed, logical</p>
+                            <p>Categorical field for each in a multipart featureset</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>write</th>
+                        <th>variable</th>
                         <td>
-                            <p>Save the cache directory in the <code>.Renviron</code> file for persistence across R sessions</p>
+                            <p>Variable Name/p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>gcm</th>
+                        <td>
+                            <p>Global Climate Model</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>scenario</th>
+                        <td>
+                            <p>Emissions Scenario</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>period</th>
+                        <td>
+                            <p>Time Period</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>stat</th>
+                        <td>
+                            <p>Statsistic</p>
                         </td>
                     </tr>
                 </table>
 
                 <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-                <p><code>caladapt-py</code> has the ability to store copies of objects downloaded
-                    from Cal-Adapt. An example of this would be the raster series data catalog and the
-                    geometries of AOI Presets.</p>
-                <p>NOTE: <code>caladapt-py</code> does <em>not</em> cache climate data fetched from Cal-Adapt. Every time
-                    you call a function that fetches data (e.g., <code><a href='ca_getvals.html'>ca_getvals</a></code>), data is retrieved fresh.</p>
-                <p>If <code>default = TRUE</code>, a default cache directory will be used (<a href='https://rdrr.io/pkg/rappdirs/man/user_cache_dir.html'>user_cache_dir</a>)
-                    <em>if</em> one hasn't already been set with <code>ca_setcache</code>.</p>
-                <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+                <p><code>results</code>...</p>
+                <p><code>workspace</code>...</p>
+                <p><code>tableName</code>...</p>
+                <p><code>fieldName</code>...</p>
+                <p><code>variable</code>...</p>
+                <p><code>gcm</code>...</p>
+                <p><code>scenario</code>...</p>
+                <p><code>period</code>...</p>
+                <p><code>stat</code>...</p>
+                <p>NOTE: <em>if</em> <code>fieldName</code>, using multiples feature in CalAdapt API query, the categorical field used to store the unique identifier for each feature.</p>
 
-
-                <ul>
-                    <li>
-                        <p><code>ca_setcache</code>: Set cache directory</p>
-                    </li>
-                </ul>
                 <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
                 <div class='dont-index'>
-                    <p><code><a href='ca_catalog_rs.html'>ca_catalog_rs</a></code></p>
+                    <p><code><a href='returnData.html'>returnData</a></code></p>
                 </div>
 
             </div>
