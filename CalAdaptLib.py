@@ -403,7 +403,7 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
                 
     return wktArray
 
-def getvariables(dataFile, variable="", gcm="", period="", scenario=""):
+def getVariables(dataFile, variable="", gcm="", period="", scenario=""):
     data = pd.read_csv(dataFile, sep=" ", header=None)
     data.columns = ["StringVariable"]
     data["counts"] = data.StringVariable.str.count("_")
@@ -457,7 +457,7 @@ def getvariables(dataFile, variable="", gcm="", period="", scenario=""):
     
     return [uniqueVariable,uniqueGCM,uniquePeriod,uniqueScenario]
 
-def getResourcename(dataFile, variable="", gcm="", period="", scenario=""):
+def getResourceName(dataFile, variable="", gcm="", period="", scenario=""):
     data = pd.read_csv(dataFile, sep=" ", header=None)
     data.columns = ["StringVariable"]
     data["counts"] = data.StringVariable.str.count("_")

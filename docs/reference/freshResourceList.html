@@ -7,26 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Function reference • caladapt-py</title>
+    <title>Manage Cache Directory — ca_getcache • caladapt-py</title>
 
-    <style>
-        .space {
-            padding-left: 35%;
-        }
 
-        .item {
-            display: flex;
-        }
-
-        .item-left {
-            width: 40%;
-        }
-
-        .item-right {
-            width: 60%;
-        }
-
-    </style>
     <!-- jquery -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <!-- Bootstrap -->
@@ -57,7 +40,8 @@
 
 
 
-    <meta property="og:title" content="Function reference" />
+    <meta property="og:title" content="Manage Cache Directory — ca_getcache" />
+    <meta property="og:description" content="View and set the directory for the data catalog" />
 
 
 
@@ -90,7 +74,7 @@
 </head>
 
 <body data-spy="scroll" data-target="#toc">
-    <div class="container template-reference-index">
+    <div class="container template-reference-topic">
         <header>
             <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
                 <div class="container">
@@ -155,98 +139,83 @@
         </header>
 
         <div class="row">
-            <div class="contents col-md-9">
-                <h1>Reference</h1>
-                <div class="PythonNotebook">
-                    <h2>Python (Jupyter Notebook)</h2>
-                    <p>Function from the CalAdaptApi.py Library that interact with the CalAdapt API and FTP site</p>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="createChart.html" class="">createChart()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Creates a chart using the arcpy libary and populates the chart from a table. This could be from the table created using the createTable() function and the CalAdapt API</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="createTable.html" class="">createTable()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Creates a table using the arcpy libary and populates the table with the results from the CalAdapt API</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="createWKT.html" class="">createWKT()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Generates well know text (wkt) representation of spatial data for use in the returnData() function and the CalAdapt API</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="downloadData.html" class="">downloadData()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Initiates and downloads data from the CalAdapt FTP site</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="freshResourceList.html" class="">freshResourceList()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Initiates and downloads data from the CalAdapt FTP site</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="getResourceName.html" class="">getResourceName()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Generates a list of resources available on CalAdapt API, using the resources list create by the freshResourceList() function.</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="getVariables.html" class="">getVariables()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Generates a list of variables available on CalAdapt API (when searching for one or many ietms such as variable, gcm, period, or scenario), uses the resources list create by the freshResourceList() function.</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="makeFileName.html" class="">makeFileName()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Generates the url and potential file names for the request to the FTP site</p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="returnData.html" class="">returnData()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>Creates a list of resources available on CalAdapt using the CalAdapt API</p>
-                        </div>
-                    </div>
+            <div class="col-md-9 contents">
+                <div class="page-header">
+                    <h1>Manage Cache Directory</h1>
+                    <small class="dont-index">Source: <a href='https://github.com/ucanr-igis/caladapt-py/blob/master/R/ca_cache.R'><code>R/ca_cache.R</code></a></small>
+                    <div class="hidden name"><code>ca_getcache.Rd</code></div>
                 </div>
-                <div class="PythonToolbox">
-                    <h2>ArcGIS Python Toolbox</h2>
-                    <p>description</p>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="" class="">placeHolder()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>placeHoldere</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
+                <div class="ref-description">
+                    <p>View and set the directory for the data catalog</p>
+                </div>
+
+                <pre class="usage"><span class='fu'>ca_getcache</span>(default = <span class='fl'>TRUE</span>, quiet = <span class='fl'>TRUE</span>)
+
+<span class='fu'>ca_setcache</span>(<span class='kw'>cache_dir</span>, make_dir = <span class='fl'>FALSE</span>, write = <span class='fl'>TRUE</span>, quiet = <span class='fl'>FALSE</span>)</pre>
+
+                <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+                <table class="ref-arguments">
+                    <colgroup>
+                        <col class="name" />
+                        <col class="desc" />
+                    </colgroup>
+                    <tr>
+                        <th>default</th>
+                        <td>
+                            <p>Use a default cache directory if no other has been set</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>quiet</th>
+                        <td>
+                            <p>Suppress messages</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>cache_dir</th>
+                        <td>
+                            <p>The directory for cached data, can also be 'default' to use the default location</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>make_dir</th>
+                        <td>
+                            <p>Make the directory if needed, logical</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>write</th>
+                        <td>
+                            <p>Save the cache directory in the <code>.Renviron</code> file for persistence across R sessions</p>
+                        </td>
+                    </tr>
+                </table>
+
+                <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+                <p><code>caladapt-py</code> has the ability to store copies of objects downloaded
+                    from Cal-Adapt. An example of this would be the raster series data catalog and the
+                    geometries of AOI Presets.</p>
+                <p>NOTE: <code>caladapt-py</code> does <em>not</em> cache climate data fetched from Cal-Adapt. Every time
+                    you call a function that fetches data (e.g., <code><a href='ca_getvals.html'>ca_getvals</a></code>), data is retrieved fresh.</p>
+                <p>If <code>default = TRUE</code>, a default cache directory will be used (<a href='https://rdrr.io/pkg/rappdirs/man/user_cache_dir.html'>user_cache_dir</a>)
+                    <em>if</em> one hasn't already been set with <code>ca_setcache</code>.</p>
+                <h2 class="hasAnchor" id="functions"><a class="anchor" href="#functions"></a>Functions</h2>
+
+
+                <ul>
+                    <li>
+                        <p><code>ca_setcache</code>: Set cache directory</p>
+                    </li>
+                </ul>
+                <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+
+                <div class='dont-index'>
+                    <p><code><a href='ca_catalog_rs.html'>ca_catalog_rs</a></code></p>
+                </div>
+
+            </div>
             <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
                 <nav id="toc" data-toggle="toc" class="sticky-top">
                     <h2 data-toc-skip>Contents</h2>
