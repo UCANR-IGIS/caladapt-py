@@ -24,7 +24,7 @@ shape and format you require:
     compatible  
 4)  user feedback and input is welcome
 
-*Development Status (Feb 2021)*
+*Development Status (May 2021)*
 
   - `caladapt-py` only supports Cal-Adapt’s raster data layers (which is
     most of them). There are no plans at present to support importing
@@ -38,9 +38,9 @@ shape and format you require:
 
 `caladapt-py` is hosted on
 [GitHub](https://github.com/ucanr-igis/caladapt-py).
-To install, download the zip from github and place in your project folder.
-For ArcGIS, load the python toolbox into your ArcGIS Project and use tools in the toolbox.
-For Python, import the libarary and use the different modules as needed.
+To install, download the zip  file from github and uncompress the zip file  into your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use the tools in the toolbox. For Python, import the libarary and use the different modules as needed.
+
+General Workflow
 
 ## General Workflow
 
