@@ -131,14 +131,14 @@
                         <li>the tool is being updated fairly often</li>
                         <li>there’s a possibility that updates will <em>not</em> be backward compatible</li>
                     </ul>
-                    <p><em>Development Status (Feb 2021)</em></p>
+                    <p><em>Development Status (May 2021)</em></p>
                     <ul>
                         <li>
                             <code>caladapt-py</code> only supports Cal-Adapt’s raster data layers (which is most of them). There are no plans at present to support importing station data (i.e., sea level rise).<br>
-                        </li>
+                      </li>
                         <li>Retrieving values currently works. Retrieving rasters is not yet supported.</li>
                         <li>Currently you can download the source netcdf data used in CalAdapt and you can query locations by user-provided points, lines, and polygons.</li>
-                    </ul>
+                  </ul>
                     <div id="installation" class="section level2">
                         <h2 class="hasAnchor">
                             <a href="#installation" class="anchor"></a>Installation</h2>
@@ -190,16 +190,8 @@
                     <h1 class="hasAnchor">
                         <a href="#convenience-features-and-functions" class="anchor"></a>Convenience Features and Functions</h1>
                     <ul>
-                        <li>All <code>caladapt-py</code> functions are pipe friendly and tidyverse compliant.<br>
+                        <li>You can search the Cal-Adapt catalog of raster series from within Python and ArcGIS. Download a new version of the catalog with <code><a href="reference/freshResourceList.html">freshResourceList()</a></code>.<br>
                         </li>
-                        <li>Spatial data formats use the <code>sf</code> and <code>raster</code> packages.<br>
-                            -Returned values have units (thanks to the <a href="https://cran.r-project.org/package=units">units</a>) package. No more guessing what the units are or having to look up unit conversion constants!<br>
-                        </li>
-                        <li>Plotting an API Request object shows the query’s location.<br>
-                        </li>
-                        <li>You can search the Cal-Adapt catalog of raster series from within Python and ArcGIS. Download a new version of the catalog with <code><a href="reference/ca_catalog_rs.html">ca_catalog_rs()</a></code>.<br>
-                        </li>
-                        <li>Don’t need every single column in your output dataframe? <code><a href="reference/ca_vals2tbl.html">ca_vals2tbl()</a></code> provides arguments to specify which column(s) to return.</li>
                     </ul>
                 </div>
                 <!--                <div id="caladapt-py-betar-club" class="section level1">
