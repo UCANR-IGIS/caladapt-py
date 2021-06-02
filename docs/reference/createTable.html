@@ -141,9 +141,9 @@
         <div class="row">
             <div class="col-md-9 contents">
                 <div class="page-header">
-                    <h1>Creates a data table and populates with data from the CalAdapt API</h1>
+                    <h1>Creates a table using the arcpy library and populates the table with the results from the CalAdapt API</h1>
                     <small class="dont-index">Source: <a href='https://github.com/UCANR-IGIS/caladapt-py/blob/master/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
-                    <div class="hidden name"><code>CalAdaptLib.py</code></div>
+                  <div class="hidden name"><code>CalAdaptLib.py</code></div>
                 </div>
 
                 <div class="ref-description">
@@ -179,7 +179,7 @@
                     <tr>
                         <th>fieldName</th>
                         <td>
-                            <p>Categorical field for each in a multipart featureset</p>
+                            <p>Categorical field for each unique part in a multipart featureset</p>
                         </td>
                     </tr>
                     <tr>
@@ -215,17 +215,9 @@
                 </table>
 
                 <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
-
-                <p><code>results</code>...</p>
-                <p><code>workspace</code>...</p>
-                <p><code>tableName</code>...</p>
-                <p><code>fieldName</code>...</p>
-                <p><code>variable</code>...</p>
-                <p><code>gcm</code>...</p>
-                <p><code>scenario</code>...</p>
-                <p><code>period</code>...</p>
-                <p><code>stat</code>...</p>
-                <p>NOTE: <em>if</em> <code>fieldName</code>, using multiples feature in CalAdapt API query, the categorical field used to store the unique identifier for each feature.</p>
+<p><code>caladapt-py</code> has the ability to store copies of objects downloaded
+              from Cal-Adapt. An example of this would be the source rasters in netcdf format and tabular data queried using user defined AOI. Using this function you can easily save      the data returned from the CalAdapt API into a table in an ArcGIS File Geodatabase.</p>
+                <p>NOTE: <em>if</em> <code>fieldName</code>, using multiples feature in CalAdapt API query, the categorical field will be used to store the unique identifier for each feature.</p>
 
                 <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
