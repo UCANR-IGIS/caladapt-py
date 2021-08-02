@@ -1,58 +1,13 @@
 import arcpy
 try:
     import arcpy
+    import os
     import requests 
     import urllib3, shutil
+    import CalAdaptLib as cal
 
 except ImportError:
     print('Some required Python modules are missing.')
-
-#  This function downloads data from the given api and saves the file to a
-#  local folder defines by the output location (outLoc)
-def downloadData(baseurl, outLoc, filename):
-    try:
-        #filename = fileConcat % (var, year, year)
-        url = '%s/%s' % (baseurl, filename)
-        r = requests.get(url, allow_redirects=True) #stream = True)
-        filename = '%s/%s' % (outLoc, filename)
-
-        r.status_code
-
-        if r.status_code == 200:
-            with open(filename, 'wb') as f:
-                f.write(r.content)
-        return r.status_code
-
-    except requests.exceptions.HTTPError as err:
-        print(err)
-
-def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
-    if dataType == "met":
-        filenameScheme = '%s_day_%s_%s_%s%s0101-%s1231.LOCA_2016-04-02.16th.CA_NV.nc' % (variable,climateModel,climateScenario,"%s",yearVar,yearVar)
-        serverLocation = '%s/%s/%s/%s' % (dataType,climateModel,climateScenario,variable)
-        source = ['r1i1p1_','r2i1p1_','r6i1p1_','r6i1p3_','r8i1p1_']
-    elif dataType == "rel_humid":
-        yearData = yearVar.split(' ')
-        yearVar = yearData[0]
-        if yearData[1] == 'daily':
-            data = ''
-        elif yearData[1] == 'monthly':
-            data = '.monthly'
-        elif yearData[1] == 'average_monthly':
-            data ='.monthly.clim'
-        filenameScheme = '%s_%s.%s.%s.%s.LOCA_2017-04-13.CA_NV%s.nc' % (dataType,variable,climateModel,climateScenario,yearVar,data)
-        serverLocation = '%s/%s/%s' % (dataType,climateModel,climateScenario)
-        source = ['']
-    elif dataType == "solards":
-        filenameScheme = 'rsds_day_%s_%s_%s%s.crop.fixcal.bc.srs.1x1.bc.srs.ds.postds_bc.nc' % (climateModel,climateScenario,"%s",yearVar)
-        serverLocation = '%s/%s' % (dataType,climateModel)
-        source = ['r1i1p1_','r6i1p1_']
-    elif dataType == "wspeed":
-        filenameScheme = '%s_day_%s_%s_%s%s.crop.bc.srs.1x1.bc.srs.ds.postds_bc.nc' % (dataType,climateModel,climateScenario,"%s",yearVar)
-        serverLocation = '%s/%s' % (dataType,climateModel)
-        source = ['r1i1p1_','r2i1p1_','r6i1p1_','r6i1p3_','r8i1p1_']
-
-    return [filenameScheme,serverLocation,source]
 
 class Toolbox(object):
     def __init__(self):
@@ -62,7 +17,7 @@ class Toolbox(object):
         self.alias = ""
 
         # List of tool classes associated with this toolbox
-        self.tools = [Livneh_Data,LOCA_Data,CA_Drought_Data, Livneh_vic_Data,Loca_vic_Data,StreamFlow_Data,MC2_Data,UCLA_Data]
+        self.tools = [Livneh_Data,LOCA_Data,CA_Drought_Data, Livneh_vic_Data,Loca_vic_Data,StreamFlow_Data,MC2_Data,UCLA_Data,GetDataAPI,CreateChart]
 
 #  This function downloads NOAA data and saves the file to a
 #  local folder defines by the output location (outLoc)
@@ -173,7 +128,7 @@ class Livneh_Data(object):
         for yearVar in years:
             for monthVar in months:
                 filename = filenameScheme % (yearVar, monthVar)
-                status = downloadData(baseurl, outLoc, filename)
+                status = cal.downloadData(baseurl, outLoc, filename)
                 arcpy.AddMessage([baseurl, outLoc, filename])
                 #if status == 200:
                 #    break
@@ -394,17 +349,17 @@ class LOCA_Data(object):
             years = range(int(parameters[4].valueAsText),year2)
 
             for yearVar in years:
-                names = makeFileName(dataType,climateModel,climateScenario,variable,yearVar)
+                names = cal.makeFileName(dataType,climateModel,climateScenario,variable,yearVar)
                 for source in names[2]:
                     filename = names[0] % (source)
                     url = '%s/%s' % (baseurl, names[1])
-                    status = downloadData(url, outLoc, filename)
+                    status = cal.downloadData(url, outLoc, filename)
                     arcpy.AddMessage(source)
                     if status == 200:
                         break
         else:
             yearVar = parameters[4].valueAsText
-            names = makeFileName(dataType,climateModel,climateScenario,variable,yearVar)
+            names = cal.makeFileName(dataType,climateModel,climateScenario,variable,yearVar)
             for source in names[2]:
                 arcpy.AddMessage(names)
                 if not source:
@@ -412,7 +367,7 @@ class LOCA_Data(object):
                 else:
                     filename = names[0] % (source)
                 url = '%s/%s' % (baseurl, names[1])
-                status = downloadData(url, outLoc, filename)
+                status = cal.downloadData(url, outLoc, filename)
                 arcpy.AddMessage(source)
                 if status == 200:
                     break
@@ -500,7 +455,7 @@ class CA_Drought_Data(object):
         ts = ['t']
         for t in ts:
             filename = filenameScheme % (variable, yearVar)
-            status = downloadData(baseurl, outLoc, filename)
+            status = cal.downloadData(baseurl, outLoc, filename)
 
             if status == 200:
                 break
@@ -604,9 +559,9 @@ class Livneh_vic_Data(object):
         
         for yearVar in years:
             filename = filenameScheme % (variable, yearVar)
-            status = downloadData(baseurl, outLoc, filename)
+            status = cal.downloadData(baseurl, outLoc, filename)
             if status == 200:
-                break
+                pass
             arcpy.AddMessage([baseurl, outLoc, filename])
         return
     
@@ -734,10 +689,11 @@ class Loca_vic_Data(object):
         years = range(int(parameters[3].valueAsText),year2)
         
         for yearVar in years:
+            arcpy.AddMessage(yearVar)
             filename = filenameScheme % (variable, yearVar)
-            status = downloadData(url, outLoc, filename)
+            status = cal.downloadData(url, outLoc, filename)
             if status == 200:
-                break
+                pass
             arcpy.AddMessage([url, outLoc, filename])
         return
 
@@ -827,7 +783,7 @@ class StreamFlow_Data(object):
         for yearVar in years:
             arcpy.AddMessage(yearVar)
             filename = filenameScheme % (model, scenario, variable, yearVar)
-            status = downloadData(baseurl, outLoc, filename)
+            status = cal.downloadData(baseurl, outLoc, filename)
             if status == 200:
                 break
             arcpy.AddMessage([baseurl, outLoc, filename])
@@ -931,7 +887,7 @@ class MC2_Data(object):
         
         ts = ['t']
         for t in ts:
-            status = downloadData(url, outLoc, filename)
+            status = cal.downloadData(url, outLoc, filename)
             if status == 200:
                 break
             arcpy.AddMessage([baseurl, outLoc, filename])
@@ -1088,8 +1044,392 @@ class UCLA_Data(object):
                 else:
                     filename = 'wrfpost_d02_%s%s.nc' % (yearVar,monthVar)
                 #filename = filenameScheme % (yearVar, monthVar)
-                status = downloadData(baseurl, outLoc, filename)
+                status = cal.downloadData(baseurl, outLoc, filename)
                 arcpy.AddMessage([baseurl, outLoc, filename])
                 if status == 200:
                     break
+        return
+#  This function queries the CalAdapy API and shows the data in the tool window
+class GetDataAPI(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Get Data from API"
+        self.description = ""
+        self.canRunInBackground = True
+        self.category = "CalAdapt - API"  
+
+    def getParameterInfo(self):
+        in_feature_set = arcpy.Parameter(
+            displayName="Input Feature Set",
+            name="in_feature_set",
+            datatype="GPFeatureRecordSetLayer",
+            parameterType="Required",
+            direction="Input")
+        individual_features = arcpy.Parameter(
+            displayName="Process Features Individually",
+            name="individual_features",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input")
+        catField = arcpy.Parameter(
+            displayName="Category Field",
+            name="catField",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input")
+        variable = arcpy.Parameter(
+            displayName="Variable",
+            name="Variable",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        gcm = arcpy.Parameter(
+            displayName="GCM",
+            name="GCM",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        period = arcpy.Parameter(
+            displayName="Period",
+            name="Period",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        historical = arcpy.Parameter(
+            displayName="Include Historical",
+            name="historical",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
+        rcp45 = arcpy.Parameter(
+            displayName="Include RCP 4.5",
+            name="rcp45",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
+        rcp85 = arcpy.Parameter(
+            displayName="Include RCP 8.5",
+            name="rcp85",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
+        vic = arcpy.Parameter(
+            displayName="Include VIC",
+            name="vic",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input")
+        stat = arcpy.Parameter(
+            displayName="Aggregate type",
+            name="Stat",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        outTable = arcpy.Parameter(
+            displayName="Output Table",
+            name="outTable",
+            datatype="DETable",
+            parameterType="Required",
+            direction="Output")
+        
+        libPath = os.path.dirname(cal.__file__)
+        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(resourceFile)
+        rl = cal.getVariables(resourceFile, variable="", gcm="", scenario="", period="")
+
+        variable.filter.list = rl[0]
+        variable.value = ""
+        gcm.filter.list = rl[1]
+        gcm.value = ""
+        period.filter.list = rl[2]
+        period.value = ""
+        catField.enabled = False
+        historical.value = False
+        rcp45.value = False
+        rcp85.value = False
+        vic.value = False
+        stat.filter.list = ['max', 'mean', 'median', 'min', 'sum']
+        stat.value = 'mean'
+
+        # Use __file__ attribute to find the .lyr file (assuming the
+        #  .pyt and .lyr files exist in the same folder)
+        #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
+        
+        params = [in_feature_set,individual_features,catField,variable,gcm,period,historical,rcp45,rcp85,vic,stat,outTable]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        
+        if parameters[3].valueAsText:
+            variable1 = parameters[3].valueAsText
+        else:
+            variable1 = ""
+
+        if parameters[4].valueAsText:
+            gcm1 = parameters[4].valueAsText
+        else:
+            gcm1 = ""
+
+        if parameters[5].valueAsText:
+            period1 = parameters[5].valueAsText
+        else:
+            period1 = ""
+
+        libPath = os.path.dirname(cal.__file__)
+        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(resourceFile)
+        rl = cal.getVariables(resourceFile, variable=variable1, gcm=gcm1, scenario="", period=period1)
+
+        if parameters[0].altered:
+            # If the field is not in the new feature class
+            # then switch to the first field
+            try:
+                li = []
+                m = arcpy.ListFields(parameters[0].valueAsText)
+                for i in m:
+                    print(i.name)
+                    li.append(i.name)
+                parameters[2].filter.list = li
+                
+            except:
+                # Could not read the field list
+                parameters[2].value = ""
+
+        if parameters[1].altered:
+            try:
+                if parameters[1].valueAsText == 'true':
+                    parameters[2].enabled = True
+                else:
+                    parameters[2].enabled = False
+                
+            except:
+                # Could not read the field list
+                #parameters[2].value = ""
+                pass
+        
+        #incorporate dropdowns and function
+        parameters[3].filter.list = rl[0]
+        if not parameters[3].valueAsText in rl[0]:
+            parameters[3].value = ""
+        parameters[4].filter.list = rl[1]
+        if not parameters[4].valueAsText in rl[1]:
+            parameters[4].value = ""
+        parameters[5].filter.list = rl[2]
+        if not parameters[5].valueAsText in rl[2]:
+            parameters[5].value = ""
+            
+        if "historical" in rl[3]:
+            parameters[6].enabled = True
+        else:
+            parameters[6].enabled = False
+            parameters[6].value = False
+        if "rcp45" in rl[3]:
+            parameters[7].enabled = True
+        else:
+            parameters[7].enabled = False
+            parameters[7].value = False
+        if "rcp85" in rl[3]:
+            parameters[8].enabled = True
+        else:
+            parameters[8].enabled = False
+            parameters[8].value = False
+        if "vic" in rl[3]:
+            parameters[9].enabled = True
+        else:
+            parameters[9].enabled = False
+            parameters[9].value = False
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        #parameters[3].clearMessage()
+
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        features = parameters[0].valueAsText
+        splitfeatures = parameters[1].valueAsText
+        catField = parameters[2].valueAsText
+        variable1 = parameters[3].valueAsText
+        gcm1 = parameters[4].valueAsText
+        period1 = parameters[5].valueAsText
+        hist = parameters[6].valueAsText
+        rcp45 = parameters[7].valueAsText
+        rcp85 = parameters[8].valueAsText
+        vic = parameters[9].valueAsText
+        stat = parameters[10].valueAsText
+        outTable = parameters[11].valueAsText
+
+        libPath = os.path.dirname(cal.__file__)
+        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(resourceFile)
+        
+        #arcpy.AddMessage(outTable)
+        zz = outTable.split('\\')
+        workspace = "/".join(zz[:-1])
+        tableName = zz[-1]
+        
+        #arcpy.AddMessage(outTable1)
+        arcpy.AddMessage(zz)
+        arcpy.AddMessage(workspace)
+        arcpy.AddMessage(tableName)
+
+        scenarios = []
+        if hist == 'true':
+            scenarios.append('historical')
+        if rcp45 == 'true':
+            scenarios.append('rcp45')
+        if rcp85 == 'true':
+            scenarios.append('rcp85')
+        if vic == 'true':
+            scenarios.append('vic')
+        if splitfeatures == 'true':
+            splitfeatures = True
+        else:
+            splitfeatures = False
+            
+        #arcpy.AddMessage(scenarios)
+        arcpy.env.workspace = workspace
+        existTest = arcpy.Exists(tableName)
+        arcpy.AddMessage(existTest)
+
+        if splitfeatures == False:
+            aoiArray = cal.createWKT(features, splitfeatures)
+        else:
+            aoiArray = cal.createWKT(features, splitfeatures, catField)
+            
+        for aoi in aoiArray:
+            aoiTemp = aoi[0]
+            for scenario1 in scenarios:
+                arcpy.AddMessage(aoi)
+                arcpy.AddMessage(scenario1)
+                #arcpy.AddMessage(aoiTemp)
+                CalAdaptFilename = cal.getResourceName(resourceFile, variable=variable1, gcm=gcm1, scenario=scenario1, period=period1)
+                #results = cal.returnData(aoiTemp,scenario1,variable1,gcm1,period1,stat,CalAdaptFilename)
+                results = cal.returnData(aoiTemp,stat,CalAdaptFilename[0])
+                arcpy.AddMessage(results)
+                g = cal.createTable(results,workspace,tableName,aoi, variable1, gcm1, scenario1, period1, stat)
+                #g = cal.createTable(outTable)
+            if (splitfeatures == True):
+                arcpy.AddMessage(aoi[3])
+            #arcpy.AddMessage(g)
+
+        #aprx = arcpy.mp.ArcGISProject("current")
+        #map = aprx.listMaps()[0]
+        #table1 = "%s/%s" % ('D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb','caladapt_data')
+        #arcpy.AddMessage(table1)
+        #addTab = arcpy.mp.Table(table1)
+        #lyrTest = 'D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb/caladapt_data'
+        #arcpy.MakeTableView_management(table1, "caladapt_data")
+        
+        #cal.createChart(g[0],g[1],g[2],g[3])
+            #arcpy.AddMessage(msg)
+        return
+#  This function queries the CalAdapy API and shows the data in the tool window
+class CreateChart(object):
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Chart Data from API"
+        self.description = ""
+        self.canRunInBackground = True
+        self.category = "CalAdapt - API"  
+
+    def getParameterInfo(self):
+
+        inTable = arcpy.Parameter(
+            displayName="Output Table",
+            name="outTable",
+            #datatype="DETable",
+            datatype="GPTableView",
+            parameterType="Required",
+            direction="Input")
+
+        dateField = arcpy.Parameter(
+            displayName="Date Field",
+            name="dateField",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        catField = arcpy.Parameter(
+            displayName="Category Field",
+            name="catField",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        valueField = arcpy.Parameter(
+            displayName="Value Field",
+            name="valueField",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+
+        dateField.filter.list = []
+        catField.filter.list = []
+        valueField.filter.list = []
+
+        # Use __file__ attribute to find the .lyr file (assuming the
+        #  .pyt and .lyr files exist in the same folder)
+        #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
+        
+        params = [inTable, dateField, catField, valueField]
+        return params
+
+    def isLicensed(self):
+        """Set whether tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+
+        if parameters[0].altered:
+            # If the field is not in the new feature class
+            # then switch to the first field
+            try:
+                li = []
+                m = arcpy.ListFields(parameters[0].valueAsText)
+                for i in m:
+                    print(i.name)
+                    li.append(i.name)
+                parameters[1].filter.list = li
+                parameters[2].filter.list = li
+                parameters[3].filter.list = li
+
+            except:
+                # Could not read the field list
+                parameters[1].value = ""
+
+        return 
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter.  This method is called after internal validation."""
+        #parameters[3].clearMessage()
+
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        inTable = parameters[0].valueAsText
+        dateField = parameters[1].valueAsText
+        catField = parameters[2].valueAsText
+        valueField = parameters[3].valueAsText
+
+        zz = inTable.split('\\')
+        tableName = zz[-1]
+                
+        cal.createChart(dateField,catField,valueField,tableName)
+
         return
