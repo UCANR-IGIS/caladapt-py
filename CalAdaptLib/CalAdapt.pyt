@@ -874,7 +874,7 @@ class MC2_Data(object):
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        baseurl = 'http://albers.cnr.berkeley.edu/data/MC2'
+        baseurl = 'http://albers.cnr.berkeley.edu/data/gif/MC2'
         model = parameters[0].valueAsText
         climateModel = parameters[1].valueAsText
         climateScenario = parameters[2].valueAsText
