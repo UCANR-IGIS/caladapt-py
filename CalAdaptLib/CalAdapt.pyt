@@ -17,7 +17,7 @@ class Toolbox(object):
         self.alias = ""
 
         # List of tool classes associated with this toolbox
-        self.tools = [Livneh_Data,LOCA_Data,CA_Drought_Data, Livneh_vic_Data,Loca_vic_Data,StreamFlow_Data,MC2_Data,UCLA_Data,GetDataAPI,CreateChart]
+        self.tools = [Livneh_Data,LOCA_Data,CA_Drought_Data, Livneh_vic_Data,Loca_vic_Data,StreamFlow_Data,UCLA_Data,GetDataAPI,CreateChart]
 
 #  This function downloads NOAA data and saves the file to a
 #  local folder defines by the output location (outLoc)
@@ -791,7 +791,7 @@ class StreamFlow_Data(object):
 
 #  This function downloads MC2 data and saves the file to a
 #  local folder defines by the output location (outLoc)
-class MC2_Data(object):
+'''class MC2_Data(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "MC2 Data"
@@ -892,14 +892,14 @@ class MC2_Data(object):
                 break
             arcpy.AddMessage([baseurl, outLoc, filename])
 
-        return
+        return'''
 
 #  This function downloads UCLA data and saves the file to a
 #  local folder defines by the output location (outLoc)
 class UCLA_Data(object):
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "Unknown Data"
+        self.label = "Dynamical Downscaling Product"
         self.description = ""
         self.canRunInBackground = True
         self.category = "University of California - Los Angeles"  
@@ -1033,7 +1033,9 @@ class UCLA_Data(object):
         if (parameters[4].valueAsText == "all"):
             months = ['01','02','03','04','05','06','07','08','09','10','11','12']
         else:
-            months = [parameters[2].valueAsText]
+            months = [parameters[4].valueAsText]
+
+        arcpy.AddMessage(months)
 
         for yearVar in years:
             for monthVar in months:
@@ -1046,8 +1048,9 @@ class UCLA_Data(object):
                 #filename = filenameScheme % (yearVar, monthVar)
                 status = cal.downloadData(baseurl, outLoc, filename)
                 arcpy.AddMessage([baseurl, outLoc, filename])
-                if status == 200:
-                    break
+                #if status <> 200:
+                #   pass
+               
         return
 #  This function queries the CalAdapy API and shows the data in the tool window
 class GetDataAPI(object):
