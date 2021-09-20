@@ -122,94 +122,47 @@
                     <!-- badges: start -->
 
                     <p>See also: <a href="https://ucanr-igis.github.io/caladapt-py/" class="uri">https://ucanr-igis.github.io/caladapt-py/</a></p>
-                    <p><code>caladapt-py</code> is an API client that makes it easier to work with data from <a href="https://cal-adapt.org/">Cal-Adapt.org</a> in Python and ArcGIS. The role of <code>caladapt-py</code> is to bring data into Python and ArcGIS and provide low-level functions to get it into the shape and format you require:</p>
-
-
+                    <p><code>caladapt-py</code> is an API client that makes it easier to work with data from <a href="https://cal-adapt.org/">Cal-Adapt.org</a> in Python and ArcGIS. The role of <code>caladapt-py</code> is to bring data into Python and ArcGIS and provide high-level functions to get it into your GIS for further analysis:</p>
+                    <p><code>caladapt-py</code> allows you to:</p>
+                    <ul>
+                        <li>download netcdf data from the Cal-Adapt FTP site.  
+                            These data allow for custom analyzes to be conducted at the
+                            statewide scale using GIS.
+                        </li>
+                        <li>retrieve values by user defined points, lines, or polygons</li>
+                        <li>store results in File Geodatabase tables and other table types</li>
+                    </ul>
                     <p><strong>‘Beta’</strong> status means:</p>
                     <ul>
                         <li>the tool is still under development</li>
                         <li>the tool is being updated fairly often</li>
                         <li>there’s a possibility that updates will <em>not</em> be backward compatible</li>
                     </ul>
-                    <p><em>Development Status (May 2021)</em></p>
-                    <ul>
-                        <li>
-                            <code>caladapt-py</code> only supports Cal-Adapt’s raster data layers (which is most of them). There are no plans at present to support importing station data (i.e., sea level rise).<br>
-                      </li>
-                        <li>Retrieving values currently works. Retrieving rasters is not yet supported.</li>
-                        <li>Currently you can download the source netcdf data used in CalAdapt and you can query locations by user-provided points, lines, and polygons.</li>
-                  </ul>
                     <div id="installation" class="section level2">
                         <h2 class="hasAnchor">
                             <a href="#installation" class="anchor"></a>Installation</h2>
-                        <p><code>caladapt-py</code> is hosted on <a href="https://github.com/ucanr-igis/caladapt-py">GitHub</a>. To install, download the zip&nbsp; file from github and uncompress the zip file&nbsp; into your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use the tools in the toolbox. For Python, import the libarary and use the different modules as needed.</p>
+                        <p><code>caladapt-py</code> is hosted on <a href="https://github.com/ucanr-igis/caladapt-py">GitHub</a>. To install, download the <a href='../CalAdaptPy.zip'>zip</a> file from github and uncompress the zip file&nbsp; into your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use the tools in the toolbox. For Python, import the libarary and use the different modules as needed.</p>
                     </div>
                     <div id="general-workflow" class="section level2">
                         <h2 class="hasAnchor">
                             <a href="#general-workflow" class="anchor"></a>General Workflow</h2>
-                        <h3>Python (Jupyter Notebook)</h3>
+                            <h3>ArcGIS Python Toolbox</h3>
+                            <ol type="1">
+                                <li>Add toolbox to ArcGIS Pro Project</li>
+                                <img src='./reference/figures/pythonToolbox.png'>
+                                <li>Run tool to download resultrs from user defined areas</li>
+                                <li>Run tools to download netcdf datasets</li>
+                                <li>Perform additional GIS analyzes based on returned data</li>
+                            </ol>
+                            <h3>Python (Jupyter Notebook)</h3>
                         <p>In general, there are three steps to getting data via the Cal-Adapt API:</p>
                         <ol type="1">
                             <li>...</li>
                             <li>...</li>
                             <li>...</li>
                         </ol>
-                        <h3>ArcGIS Python Toolbox</h3>
-                        <ol type="1">
-                            <li>...</li>
-                            <li>...</li>
-                            <li>...</li>
-                        </ol>
                     </div>
-                    <!--                    <div id="sample-usage-get-annual-projected-temperature-at-a-point-location" class="section level2">
-                        <h2 class="hasAnchor">
-                            <a href="#sample-usage-get-annual-projected-temperature-at-a-point-location" class="anchor"></a>Sample Usage: Get Annual Projected Temperature at a Point Location</h2>
-                        <p>1) Load the package:</p>
-                        <div class="sourceCode" id="cb2">
-                            <pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://github.com/ucanr-igis/caladapt-py">caladapt-py</a></span>)
-</pre>
-                        </div>
-                        <p>2) Next, create an <strong>API request object</strong> for a point location. This doesn’t actually fetch any data, it puts together the pieces pieces of an API request. There are a number of ‘<em>constructor</em>’ functions you can mix and match to create an API request object, for example:</p>
-                        <div class="sourceCode" id="cb3">
-                            <pre class="downlit">
-
-</pre>
-                        </div>
-                        <p><strong>Note</strong>: Cal-Adapt has data for many but by no means all permutations of the above constants.</p>
-                        <p>3) Next, feed your API call into a function that <strong>fetches data</strong>, such as <code><a href="reference/ca_getvals.html">ca_getvals()</a></code>.</p>
-                        <div class="sourceCode" id="cb5">
-                            <pre class="downlit">
-
-</pre>
-                        </div>
-                        <p>For more examples, including retrieving data for a preset area-of-interest (i.e., census tracts), see the ‘Jupyter Notebooks’ menu on the <a href="https://ucanr-igis.github.io/caladapt-py/">website</a>.</p>
-                    </div>-->
                 </div>
-                <div id="convenience-features-and-functions" class="section level1">
-                    <h1 class="hasAnchor">
-                        <a href="#convenience-features-and-functions" class="anchor"></a>Convenience Features and Functions</h1>
-                    <ul>
-                        <li>You can search the Cal-Adapt catalog of raster series from within Python and ArcGIS. Download a new version of the catalog with <code><a href="reference/freshResourceList.html">freshResourceList()</a></code>.<br>
-                        </li>
-                    </ul>
-                </div>
-                <!--                <div id="caladapt-py-betar-club" class="section level1">
-                    <h1 class="hasAnchor">
-                        <a href="#caladapt-py-betar-club" class="anchor"></a>caladapt-py beta club</h1>
-                    <p>The <strong>caladapt-py beta</strong> club is <strong>now accepting members!</strong> If you would like to be part of this elite cadre of <code>caladapt-py</code> early adopters, you should join our beta testing program. Benefits of joining the <strong>caladapt-py beta</strong> club include:</p>
-                    <ul>
-                        <li>early notification of <strong>package updates</strong><br>
-                        </li>
-                        <li>24/7 <strong>priority support</strong><br>
-                        </li>
-                        <li>
-                            <strong>exclusive invitations</strong> to <code>caladapt-py</code> tutorials and user feedback sessions</li>
-                        <li>an <strong>email forum</strong> to bounce ideas around with other caladapt-py users and the package developer</li>
-                    </ul>
-                    <p>To join the <strong>caladapt-py beta</strong> club, please subscribe yourself to the <a href="https://lists.ucdavis.edu/sympa/subscribe/caladapt-py">caladapt-py email list</a>.</p>
-                </div>-->
-
             </div>
 
             <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
