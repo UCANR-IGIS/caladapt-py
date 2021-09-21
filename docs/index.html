@@ -76,9 +76,6 @@
                             <li>
                                 <a href="reference/index.html">Reference</a>
                             </li>
-                            <li>
-                                <a href="news/index.html">Changelog</a>
-                            </li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     Jupyter Notebooks
@@ -157,9 +154,18 @@
                             <h3>Python (Jupyter Notebook)</h3>
                         <p>In general, there are three steps to getting data via the Cal-Adapt API:</p>
                         <ol type="1">
-                            <li>...</li>
-                            <li>...</li>
-                            <li>...</li>
+                            <li>Import the ArcPy module from ArcGIS Pro
+                                <p><code>import arcpy</code></p>
+                            </li>
+                            <li>Add toolbox to ArcGIS Pro Project</li>
+                                <img src='./reference/figures/pythonToolbox.png'>
+                            <li>In jupyter Notebook refence both the CalAdapy.pyt toolbox and the CalAdaptLib.py module
+                            <p><code>arcpy.ImportToolbox(r'D:\Data\ArcGIS\Projects\CalAdapt_Cookbook\CalAdaptLib\CalAdapt.pyt','')
+                            </code></p>
+                            <p><code>import CalAdaptLib as cal</code></p></li>
+                            <li>After importing you can run tools from the ArcGIS Python Toolbox or the CalAdaptLib
+                                <p>ie. <code>arcpy.GetDataAPI("Get Data from API Input Feature Set (Polygons)", None, '', "tair", "gfdl-cm3", "month", True, True, True, False, "mean", r"D:\Data\ArcGIS\Projects\CalAdaptpy_Test\CalAdaptpy_Test.gdb\GetDataAPI")</code></p>
+                            </li>
                         </ol>
                     </div>
                 </div>
