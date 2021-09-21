@@ -7,31 +7,39 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>createTable • caladapt-py</title>
+    <title>getVariables • caladapt-py</title>
 
 
     <!-- jquery -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
     <!-- Bootstrap -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/flatly/bootstrap.min.css" rel="stylesheet"
+        crossorigin="anonymous" />
 
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"
+        integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
 
     <!-- bootstrap-toc -->
     <link rel="stylesheet" href="../bootstrap-toc.css">
     <script src="../bootstrap-toc.js"></script>
 
     <!-- Font Awesome icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css"
+        integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css"
+        integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
     <!-- clipboard.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js"
+        integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
     <!-- headroom.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js"
+        integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js"
+        integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
     <!-- pkgdown -->
     <link href="../pkgdown.css" rel="stylesheet">
@@ -47,8 +55,10 @@
 
 
     <!-- mathjax -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js"
+        integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js"
+        integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script>
 
     <!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -67,7 +77,6 @@
         gtag('js', new Date());
 
         gtag('config', 'UA-81567502-3');
-
     </script>
 
 
@@ -79,7 +88,8 @@
             <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
                 <div class="container">
                     <div class="navbar-header">
-                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+                            data-target="#navbar" aria-expanded="false">
                             <span class="sr-only">Toggle navigation</span>
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
@@ -87,7 +97,8 @@
                         </button>
                         <span class="navbar-brand">
                             <a class="navbar-link" href="../index.html">caladapt-py</a>
-                            <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.0</span>
+                            <span class="version label label-default" data-toggle="tooltip" data-placement="bottom"
+                                title="Released version">0.1.0</span>
                         </span>
                     </div>
 
@@ -102,11 +113,10 @@
                             <li>
                                 <a href="../reference/index.html">Reference</a>
                             </li>
-                            <li>
-                                <a href="../news/index.html">Changelog</a>
-                            </li>
+
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button"
+                                    aria-expanded="false">
                                     Jupyter Notebooks
 
                                     <span class="caret"></span>
@@ -141,16 +151,19 @@
         <div class="row">
             <div class="col-md-9 contents">
                 <div class="page-header">
-                    <h1>Generates a list of variables available on CalAdapt API (when searching for one or many items such as variable, gcm, period, or scenario), uses the resources list create by the freshResourceList() function.</h1>
-                    <small class="dont-index">Source: <a href='https://github.com/ucanr-igis/caladapt-py/blob/master/CalAdaptLib/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
-                  <div class="hidden name"><code>CalAdaptLib.py</code></div>
+                    <h1>getVariables() Function</h1>
+                    <small class="dont-index">Source: <a
+                            href='https://github.com/ucanr-igis/caladapt-py/blob/master/CalAdaptLib/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
+                    <div class="hidden name"><code>CalAdaptLib.py</code></div>
                 </div>
 
                 <div class="ref-description">
-                    <p>Helper function - Parses the local list of the resources for list of variables for&nbsp; use in the ArcGIS Python Toolbox inteface.</p>
+                    <p>Helper function - Parses the local list of the resources for list of variables for&nbsp; use in
+                        the ArcGIS Python Toolbox inteface.</p>
                 </div>
 
-                <pre class="usage"><span class='fu'>getVariables</span>(dataFile, variable="", gcm="", period="", scenario="")</pre>
+                <pre
+                    class="usage"><span class='fu'>getVariables</span>(dataFile, variable="", gcm="", period="", scenario="")</pre>
 
                 <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
                 <table class="ref-arguments">
@@ -182,7 +195,7 @@
                             <p>Time Period</p>
                         </td>
                     </tr>
-				  <tr>
+                    <tr>
                         <th>scenario</th>
                         <td>
                             <p>Emissions Scenario</p>
@@ -190,11 +203,11 @@
                     </tr>
                 </table>
 
-              <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
+                <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
                 <div class='dont-index'>
                     <p><code><a href='returnData.html'>returnData</a></code></p>
-					<p><code><a href='freshResourceList.html'>freshResourceList()</a></code></p>
+                    <p><code><a href='freshResourceList.html'>freshResourceList()</a></code></p>
                 </div>
 
             </div>
