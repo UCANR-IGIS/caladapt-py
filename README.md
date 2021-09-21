@@ -11,11 +11,6 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 
 See also: <https://ucanr-igis.github.io/caladapt-py/>
 
-[](#caladapt-py-)caladapt-py ![](reference/figures/caladaptpy-beta_logo.png)
-============================================================================
-
-See also: [https://ucanr-igis.github.io/caladapt-py/](https://ucanr-igis.github.io/caladapt-py/)
-
 `caladapt-py` is an API client that makes it easier to work with data from [Cal-Adapt.org](https://cal-adapt.org/) in Python and ArcGIS. The role of `caladapt-py` is to bring data into Python and ArcGIS and provide high-level functions to get it into your GIS for further analysis:
 
 `caladapt-py` allows you to:
