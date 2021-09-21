@@ -118,9 +118,6 @@
                             <li>
                                 <a href="../reference/index.html">Reference</a>
                             </li>
-                            <li>
-                                <a href="../news/index.html">Changelog</a>
-                            </li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
                                     Jupyter Notebooks
@@ -157,6 +154,94 @@
         <div class="row">
             <div class="contents col-md-9">
                 <h1>Reference</h1>
+                <div class="PythonToolbox">
+                    <h2>ArcGIS Python Toolbox</h2>
+                    <p>Tools and Toolsets in the ArcGIS Python Toolbox</p>
+                    <p>CalAdapt - API Toolset</p>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="createChart.pyt.html" class="">Chart Data from API</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>This tool is used chart the data retrieved from the CalAdapt API using the  'Get Data from API' tool.  The tool will add a chart to the ArcGIS Pro project that it is run in.</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="GetDataAPI.pyt.html" class="">Get Data from API</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>This tool is used retrieved data from the CalAdapt API.  The tool will add a table to the ArcGIS Pro project that it is run in.</p>
+                        </div>
+                    </div>
+                    <p>Scripps Institution Of Oceanography - API Toolset</p>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="CA_Drought_Data.pyt.html" class="">CA Drought Data</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>Download the SCRIPPS California Drought Data as NetCDF files from the Cal-Adapt Data Server.</p>
+                            <p>The 2046-2074 drought is a subset of the original CMIP5 HadGEM2-ES rcp8.5 run.  This was chosen since HadGEM2-ES RCP8.5 2051-2070 is the most extreme 20 year dry spell from the 10 "California GCMs" - with 78% of historical median annual precip over NorthCentral+Sierra Calif Climate Tracker regions. A few years are included on either side of the drought for reference.</p>
+                            <p>The 2018-2046 drought uses 2046-2074 precip and daily temperature variability, but the temperature is adjusted based on the 2006-2100 linear trend of T for each point and each month.</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="Livneh_vic_Data.pyt.html" class="">Livneh VIC Data</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>Download the SCRIPPS Additional VIC Variables (forced by Gridded Observed Data) as NetCDF files from the Cal-Adapt Data Server.</p>
+                            <p>Historical observed daily precipitation and minimum and maximum temperature are used to drive a land surface/hydrology model, the Variable Infiltration Capacity (VIC) Model to provide high-resolution projections for a suite of hydrological parameters. The VIC model was originally developed by Xu Liang at the University of Washington. Development and maintenance of the current official version of the VIC model is led by the UW Hydro | Computational Hydrology group in the Department of Civil and Environmental Engineering at the University of Washington.</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="LOCA_Data.pyt.html" class="">LOCA Data</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>Download the SCRIPPS LOCA Downscaled CMIP5 Climate Projections as NetCDF files from the Cal-Adapt Data Server.</p>
+                            <p>Daily climate projections for California at a resolution of 1/16° (about 6 km, or 3.7 miles) generated to support climate change impact studies for California’s Fourth Climate Change Assessment. The data, derived from 32 coarse-resolution (~100 km) global climate models from the CMIP5 archive, were bias corrected and downscaled using the Localized Constructed Analogues (LOCA) statistical method. The data cover 1950-2005 for the historical period and 2006-2100 (some models stop in 2099) for two future climate projections. Details are described in Pierce et al., 2018.</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="Loca_vic_Data.pyt.html" class="">LOCA VIC Data</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>Download the SCRIPPS Additional VIC Variables (forced by LOCA) as NetCDF files from the Cal-Adapt Data Server.</p>
+                            <p>LOCA downscaled projections of daily precipitation and minimum and maximum temperature are used to drive a land surface/hydrology model, the Variable Infiltration Capacity (VIC) Model to provide high-resolution projections for a suite of hydrological parameters. The VIC model was originally developed by Xu Liang at the University of Washington. Development and maintenance of the current official version of the VIC model is led by the UW Hydro | Computational Hydrology group in the Department of Civil and Environmental Engineering at the University of Washington.</p>
+                        </div>
+                    </div>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="StreamFlow_Data.pyt.html" class="">Stream Flow Data</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>Download the SCRIPPS Routed Streamflow Projections as NetCDF files from the Cal-Adapt Data Server.</p>
+                            <p>Bias-corrected monthly streamflow projections constructed by routing runoff and baseflow outputs from the LOCA VIC runs and bias corrected based on California Department of Water Resources estimates of unimpaired flows. Data is available for 11 locations in California. Details are described in Pierce et al, 2018.</p>
+                        </div>
+                    </div>
+                    <p>University of California - Los Angeles - API Toolset</p>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="UCLA_Data.pyt.html" class="">Dynamical Downscaling Product</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>Download the UCLA Dynamically Downscaled Product Data as NetCDF files from the Cal-Adapt Data Server.</p>
+                            <p>The UCLA Center for Climate Science used the WRF regional climate model to dynamically downscale a 1991-2000 historical climate and five 2091-2100 future climates over California at 9km spatial resolution. The future period is based on the RCP8.5 “business-as-usual” greenhouse gas emissions scenario and contains results from 5 GCMs: CNRM-CM5, GFDL-CM3, INM-CM4, IPSL-CM5A-LR, and MPI-ESM-LR. Downscaled future climates are developed using the “psuedo-global warming technique”. In this technique, future boundary conditions are created by perturbing historical conditions with end-of-century changes from the GCMs and used to simulate high-resolution future climates within the interior of the boundaries. In this framework, variability is the same between the historical and future time periods, though a new mean climate exists in the future. 3-hourly SWE, Temp, and Precip are available for analysis from this dataset.</p>
+                        </div>
+                    </div>
+                    <p>University of Colorado - Boulder - API Toolset</p>
+                    <div class="item">
+                        <div class="item-left">
+                            <p><code><a href="Livneh_Data.pyt.html" class="">Livneh Data</a></code></p>
+                        </div>
+                        <div class="item-right">
+                            <p>Download the NOAA Observed Climate Data as NetCDF files from the Cal-Adapt Data Server.</p>
+                            <p>Historical observed daily temperature and precipitation data from approximately 20,000 NOAA Cooperative Observer (COOP) stations form the basis of this gridded dataset from 1950–2013. Observation-based meteorological data sets offer insights into changes to the hydro-climatic system by diagnosing spatio-temporal characteristics and providing a historical baseline for future projections. Details are described in Livneh et al., 2015.</p>
+                        </div>
+                    </div>
+                </div>
                 <div class="PythonNotebook">
                     <h2>Python (Jupyter Notebook)</h2>
                     <p>Function from the CalAdaptLib.py Library that interact with the CalAdapt API and FTP site</p>
@@ -230,18 +315,6 @@
                         </div>
                         <div class="item-right">
                             <p>Queries the Caladapt API using the user defined AOI and returns the data as a json object.</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="PythonToolbox">
-                    <h2>ArcGIS Python Toolbox</h2>
-                    <p>description</p>
-                    <div class="item">
-                        <div class="item-left">
-                            <p><code><a href="" class="">placeHolder()</a></code></p>
-                        </div>
-                        <div class="item-right">
-                            <p>placeHoldere</p>
                         </div>
                     </div>
                 </div>
