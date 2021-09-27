@@ -13082,13 +13082,20 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="This-cookbook-demonstrated-using-the-CalAdapt-Python-Toolbox-in-a-Jupyter-Notebook-to-perform-an-advanced-analyses-of-the-downloaded-NetCDF-data-from-the-Cal-Adapt-FTP-Servers.">This cookbook demonstrated using the CalAdapt Python Toolbox in a Jupyter Notebook to perform an advanced analyses of the downloaded NetCDF data from the Cal Adapt FTP Servers.<a class="anchor-link" href="#This-cookbook-demonstrated-using-the-CalAdapt-Python-Toolbox-in-a-Jupyter-Notebook-to-perform-an-advanced-analyses-of-the-downloaded-NetCDF-data-from-the-Cal-Adapt-FTP-Servers.">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Definition-of-Growing-Degree-Days-and-different-methods-for-calculating.">Definition of Growing Degree Days and different methods for calculating.<a class="anchor-link" href="#Definition-of-Growing-Degree-Days-and-different-methods-for-calculating.">&#182;</a></h3><p><a href="https://en.wikipedia.org/wiki/Growing_degree-day">https://en.wikipedia.org/wiki/Growing_degree-day</a></p>
 <p>GDD are calculated by taking the integral of warmth above a base temperature,[1] Tbase (usually 10 °C):</p>
 <p>GDDs are typically measured from the winter low. Any temperature below Tbase is set to Tbase before calculating the average. Likewise, the maximum temperature is usually capped at 30 °C because most plants and insects do not grow any faster above that temperature. However, some warm temperate and tropical plants do have significant requirements for days above 30 °C to mature fruit or seeds.</p>
 <p>Example of GDD calculation
 For example, a day with a high of 23 °C and a low of 12 °C (and a base of 10 °C) would contribute 7.5 GDDs.</p>
-<p>{\displaystyle {\frac {23+12}{2}}-10=7.5} {\frac  {23+12}{2}}-10=7.5
-As a second example, a day with a high of 13 °C and a low of 5 °C (and a base of 10 °C) would contribute:</p>
+<p>((23+12)/2)-10=7.5</p>
+<p>As a second example, a day with a high of 13 °C and a low of 5 °C (and a base of 10 °C) would contribute:</p>
 <p>version A: 0 GDD, as:  max((13+5)/2-10,0)=0</p>
 <p>version B: 1.5 GDDs, as: (13+10)/2-10=11.5-10=1.5</p>
 
@@ -13128,6 +13135,7 @@ As a second example, a day with a high of 13 °C and a low of 5 °C (and a base 
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Load-Non-Standard-Python-Libraries">Load Non-Standard Python Libraries<a class="anchor-link" href="#Load-Non-Standard-Python-Libraries">&#182;</a></h3><p>Below we are loading the non-standard python libraries needed for this cookbook.  These include CalAdaptpy tookbox (<a href="https://ucanr-igis.github.io/caladapt-py/">https://ucanr-igis.github.io/caladapt-py/</a>) and the HeatUnits.py file that includes the functions for calculating different methods of Growing Degree Days as described in Zalom, F.G., P.B. Goodell, L.T. Wilson, W.W. Barnett, and W.J. Bentley.  1983.  Degree-days: The calculation and use of heat units in pest management.  UC DANR Leaflet 21373.
 <a href="https://www.researchgate.net/publication/262337197_Degree-Days_the_Calculation_and_Use_of_Heat_Units_in_Pest_Management_University_of_California_Division_of_Agriculture_and_Natural_Resources_Leaflet_21373">https://www.researchgate.net/publication/262337197_Degree-Days_the_Calculation_and_Use_of_Heat_Units_in_Pest_Management_University_of_California_Division_of_Agriculture_and_Natural_Resources_Leaflet_21373</a></p>
+<p>The HeatUnits.py module can be downloaded from <a href="https://ucanr-igis.github.io/caladapt-py/notebooks/HeatUnits.py">https://ucanr-igis.github.io/caladapt-py/notebooks/HeatUnits.py</a>.</p>
 
 </div>
 </div>
