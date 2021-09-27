@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Manage Cache Directory — ca_getcache • caladapt-py</title>
+    <title>Livneh • caladapt.pyt</title>
 
 
     <!-- jquery -->
@@ -48,8 +48,7 @@
 
 
 
-    <meta property="og:title" content="Manage Cache Directory — ca_getcache" />
-    <meta property="og:description" content="View and set the directory for the data catalog" />
+
 
 
 
@@ -98,7 +97,7 @@
                         <span class="navbar-brand">
                             <a class="navbar-link" href="../index.html">caladapt-py</a>
                             <span class="version label label-default" data-toggle="tooltip" data-placement="bottom"
-                                title="Released version">0.1.0</span>
+                                title="Released version">0.2.0</span>
                         </span>
                     </div>
 
@@ -151,19 +150,15 @@
         <div class="row">
             <div class="col-md-9 contents">
                 <div class="page-header">
-                    <h1>Creates a chart using the arcpy library and populates the chart from a table. This could be from
-                        the table created using the createTable() function and the CalAdapt API</h1>
-                    <small class="dont-index">Source: <a
-                            href='https://github.com/ucanr-igis/caladapt-py/blob/master/CalAdaptLib/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
-                    <div class="hidden name"><code>ca_getcache.Rd</code></div>
+                    <h1>Livneh Data</h1>
+                    <small class="dont-index">Source: <a href='CalAdapt.pyt'><code>CalAdapt.pyt</code></a></small>
                 </div>
 
                 <div class="ref-description">
-                    <p>Create a chart in ArcGIS Pro using the data returned from the CalAdapt API.</p>
+                    <p>Download the NOAA Observed Climate Data as NetCDF files from the Cal-Adapt Data Server.</p>
                 </div>
 
-                <pre
-                    class="usage"><span class='fu'>createChart(dateField, ClimateDesc1, ClimateField, tableName</span>)</pre>
+                <pre class="usage"><span class='fu'>Livneh_Data (start year, {end year}, months, outLoc)</pre>
 
                 <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
                 <table class="ref-arguments">
@@ -172,43 +167,45 @@
                         <col class="desc" />
                     </colgroup>
                     <tr>
-                        <th>dateField</th>
+                        <th>start year</th>
                         <td>
-                            <p>Date field to use as x-axis in chart</p>
+                            <p>Choose the first (or only) year to download (years available 1950-2013)</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateDesc1</th>
+                        <th>end year (Optional)</th>
                         <td>
-                            <p>Categorical field describing data, will be used in legend</p>
+                            <p>Choose the last year (if downloading a range) to download (years available 1950-2013)</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateField</th>
+                        <th>months</th>
                         <td>
-                            <p>Climatic variable to plot in chart</p>
+                            <p>Default value is 'all' the months in the year. You can specify an individual month (01 =
+                                Jan, 02 = Feb, etc)</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>tableName</th>
+                        <th>outLoc</th>
                         <td>
-                            <p>Table containing the data to chart</p>
+                            <p>Where would you like the data saved.</p>
                         </td>
                     </tr>
                 </table>
 
                 <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-                <p><code>caladapt-py</code> has the ability to store copies of objects downloaded
-                    from Cal-Adapt. An example of this would be the source rasters in netcdf format and tabular data
-                    queried using user defined AOI. Using this function you can easily create a chart in ArcGIS Pro of
-                    the data returned from the CalAdapt API.</p>
+                <p>Download the NOAA Observed Climate Data as NetCDF files from the Cal-Adapt Data Server.</p>
+                <p>Historical observed daily temperature and precipitation data from approximately 20,000 NOAA
+                    Cooperative Observer (COOP) stations form the basis of this gridded dataset from 1950–2013.
+                    Observation-based meteorological data sets offer insights into changes to the hydro-climatic system
+                    by diagnosing spatio-temporal characteristics and providing a historical baseline for future
+                    projections. Details are described in <a href="https://www.nature.com:443/articles/sdata201542"
+                        target='_blank'>Livneh et al., 2015.</a></p>
 
                 <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
                 <div class='dont-index'>
-                    <p><code><a href='returnData.html'>returnData</a></code></p>
-                    <p><code><a href='returnData.html'>createTable</a></code></p>
                 </div>
 
             </div>
