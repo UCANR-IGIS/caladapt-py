@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Manage Cache Directory — ca_getcache • caladapt-py</title>
+    <title>Get Data from API • caladapt.pyt</title>
 
 
     <!-- jquery -->
@@ -151,19 +151,18 @@
         <div class="row">
             <div class="col-md-9 contents">
                 <div class="page-header">
-                    <h1>Creates a chart using the arcpy library and populates the chart from a table. This could be from
-                        the table created using the createTable() function and the CalAdapt API</h1>
-                    <small class="dont-index">Source: <a
-                            href='https://github.com/ucanr-igis/caladapt-py/blob/master/CalAdaptLib/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
+                    <h1>Get Data from API</h1>
+                    <small class="dont-index">Source: <a href='CalAdapt.pyt'><code>CalAdapt.pyt</code></a></small>
                     <div class="hidden name"><code>ca_getcache.Rd</code></div>
                 </div>
 
                 <div class="ref-description">
-                    <p>Create a chart in ArcGIS Pro using the data returned from the CalAdapt API.</p>
+                    <p>This tool is used retrieved data from the CalAdapt API. The tool will add a table to the ArcGIS
+                        Pro project that it is run in.</p>
                 </div>
 
                 <pre
-                    class="usage"><span class='fu'>createChart(dateField, ClimateDesc1, ClimateField, tableName</span>)</pre>
+                    class="usage"><span class='fu'>GetDataAPI (in_feature_set, {individual_features}, {catField}, Variable, GCM, Period, historical, rcp45, rcp85, vic, Stat, outTable)</pre>
 
                 <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
                 <table class="ref-arguments">
@@ -172,43 +171,106 @@
                         <col class="desc" />
                     </colgroup>
                     <tr>
-                        <th>dateField</th>
+                        <th>in_feature_set</th>
                         <td>
-                            <p>Date field to use as x-axis in chart</p>
+                            <p>Features to use in your query to the CalAdapt API. These features can be a single or
+                                series of points, lines, and polygons. The Caladapt API will not allow features to query
+                                an area larger that San Bernadino county in California. You can also sketch a feature on
+                                the map in ArcGIS Pro and use that graphic as an input to this tool.</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateDesc1</th>
+                        <th>individual_features (Optional)</th>
                         <td>
-                            <p>Categorical field describing data, will be used in legend</p>
+                            <p>Unchecked all features in the Input feature set will be treated as one feature. Checked
+                                all feature will be treated as individual features and each will be used in the query to
+                                the API and the results will be combined into a single table with a category field with
+                                a unique identifier for each feature.</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateField</th>
+                        <th>catField (Optional)</th>
                         <td>
-                            <p>Climatic variable to plot in chart</p>
+                            <p>If you choose to process features individually, specify a field in the data set that can
+                                be used to identify the unique features in the feature set.</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>tableName</th>
+                        <th>Variable</th>
                         <td>
-                            <p>Table containing the data to chart</p>
+                            <p>If you choose to process features individually, specify a field in the data set that can
+                                be used to identify the unique features in the feature set.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>GCM</th>
+                        <td>
+                            <p>Global Climatic Models (GCM) you would like to query using the CalAdapt API. A list of
+                                GCMs from CalAdapt API
+                                (<a href='https://berkeley-gif.github.io/caladapt-docs/data-catalog.html#global-climate-models-gcm'
+                                    target="_blank">https://berkeley-gif.github.io/caladapt-docs/data-catalog.html#global-climate-models-gcm</a>).
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Period</th>
+                        <td>
+                            <p>Temporal Aggregations you would like to query using the CalAdapt API. A list of periods
+                                from CalAdapt API
+                                (<a href='https://berkeley-gif.github.io/caladapt-docs/data-catalog.html#period'
+                                    target="_blank">https://berkeley-gif.github.io/caladapt-docs/data-catalog.html#period).</a>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>historical</th>
+                        <td>
+                            <p>Check to include historical data.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>rcp45</th>
+                        <td>
+                            <p>Check to include RCP 4.5 (Emissions peak around 2040, then decline). To learn more about
+                                Representative Concentration Pathways (RCPs) go here.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>rcp85</th>
+                        <td>
+                            <p>Check to include RCP 8.5 (Emissions continue to rise strongly through 2050 and plateau).
+                                To learn more about Representative Concentration Pathways (RCPs) go here.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>vic</th>
+                        <td>
+                            <p>This is only an option if you choose the 'livneh' GCM.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Stat</th>
+                        <td>
+                            <p>Choose what statistic you would like returned from the CalAdapt API.</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>outTable</th>
+                        <td>
+                            <p>Specifiy the output path of the table you would like to create with this tool.</p>
                         </td>
                     </tr>
                 </table>
 
                 <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-                <p><code>caladapt-py</code> has the ability to store copies of objects downloaded
-                    from Cal-Adapt. An example of this would be the source rasters in netcdf format and tabular data
-                    queried using user defined AOI. Using this function you can easily create a chart in ArcGIS Pro of
-                    the data returned from the CalAdapt API.</p>
+                <p>This tool is used retrieved data from the CalAdapt API. The tool will add a table to the ArcGIS Pro
+                    project that it is run in.</p>
 
                 <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
                 <div class='dont-index'>
-                    <p><code><a href='returnData.html'>returnData</a></code></p>
-                    <p><code><a href='returnData.html'>createTable</a></code></p>
+                    <p><code><a href='CreateChart.pyt.html'>Chart Data from API</a></code></p>
                 </div>
 
             </div>

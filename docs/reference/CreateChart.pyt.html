@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Manage Cache Directory — ca_getcache • caladapt-py</title>
+    <title>Create Data from API • caladapt.pyt</title>
 
 
     <!-- jquery -->
@@ -151,19 +151,16 @@
         <div class="row">
             <div class="col-md-9 contents">
                 <div class="page-header">
-                    <h1>Creates a chart using the arcpy library and populates the chart from a table. This could be from
-                        the table created using the createTable() function and the CalAdapt API</h1>
-                    <small class="dont-index">Source: <a
-                            href='https://github.com/ucanr-igis/caladapt-py/blob/master/CalAdaptLib/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
-                    <div class="hidden name"><code>ca_getcache.Rd</code></div>
+                    <h1>Chart Data from API</h1>
+                    <small class="dont-index">Source: <a href='CalAdapt.pyt'><code>CalAdapt.pyt</code></a></small>
                 </div>
 
                 <div class="ref-description">
-                    <p>Create a chart in ArcGIS Pro using the data returned from the CalAdapt API.</p>
+                    <p>This tool is used chart the data retrieved from the CalAdapt API using the 'Get Data from API'
+                        tool. The tool will add a chart to the ArcGIS Pro project that it is run in.</p>
                 </div>
 
-                <pre
-                    class="usage"><span class='fu'>createChart(dateField, ClimateDesc1, ClimateField, tableName</span>)</pre>
+                <pre class="usage"><span class='fu'>CreateChart (outTable, dateField, catField, valueField)</pre>
 
                 <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
                 <table class="ref-arguments">
@@ -172,43 +169,43 @@
                         <col class="desc" />
                     </colgroup>
                     <tr>
+                        <th>outTable</th>
+                        <td>
+                            <p>Reference to the table created when you use the 'Get Data from API' tool. This table is
+                                often stored in a file geodatabase.</p>
+                        </td>
+                    </tr>
+                    <tr>
                         <th>dateField</th>
                         <td>
-                            <p>Date field to use as x-axis in chart</p>
+                            <p>Reference to the 'DateTime' field in the tablke referenced in the outTable.</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateDesc1</th>
+                        <th>catField</th>
                         <td>
-                            <p>Categorical field describing data, will be used in legend</p>
+                            <p>Reference to a category field in the table referenced in the outTable. This could
+                                reference the 'Variable' field or the 'ClimateDesc' field.</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateField</th>
+                        <th>valueField</th>
                         <td>
-                            <p>Climatic variable to plot in chart</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>tableName</th>
-                        <td>
-                            <p>Table containing the data to chart</p>
+                            <p>Reference to a value field in the table referenced in the outTable. This could reference
+                                the 'Value' field.</p>
                         </td>
                     </tr>
                 </table>
 
                 <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-                <p><code>caladapt-py</code> has the ability to store copies of objects downloaded
-                    from Cal-Adapt. An example of this would be the source rasters in netcdf format and tabular data
-                    queried using user defined AOI. Using this function you can easily create a chart in ArcGIS Pro of
-                    the data returned from the CalAdapt API.</p>
+                <p>This tool is used chart the data retrieved from the CalAdapt API using the 'Get Data from API'
+                    tool. The tool will add a chart to the ArcGIS Pro project that it is run in.</p>
 
                 <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
                 <div class='dont-index'>
-                    <p><code><a href='returnData.html'>returnData</a></code></p>
-                    <p><code><a href='returnData.html'>createTable</a></code></p>
+                    <p><code><a href='GetDataAPI.pyt.html'>Get Data from API</a></code></p>
                 </div>
 
             </div>

@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Manage Cache Directory — ca_getcache • caladapt-py</title>
+    <title>Lineh VIC Data • caladapt.pyt</title>
 
 
     <!-- jquery -->
@@ -151,19 +151,16 @@
         <div class="row">
             <div class="col-md-9 contents">
                 <div class="page-header">
-                    <h1>Creates a chart using the arcpy library and populates the chart from a table. This could be from
-                        the table created using the createTable() function and the CalAdapt API</h1>
-                    <small class="dont-index">Source: <a
-                            href='https://github.com/ucanr-igis/caladapt-py/blob/master/CalAdaptLib/CalAdaptLib.py'><code>CalAdaptLib.py</code></a></small>
-                    <div class="hidden name"><code>ca_getcache.Rd</code></div>
+                    <h1>Livneh VIC Data</h1>
+                    <small class="dont-index">Source: <a href='CalAdapt.pyt'><code>CalAdapt.pyt</code></a></small>
                 </div>
 
                 <div class="ref-description">
-                    <p>Create a chart in ArcGIS Pro using the data returned from the CalAdapt API.</p>
+                    <p>Download the SCRIPPS Additional VIC Variables (forced by Gridded Observed Data) as NetCDF files
+                        from the Cal-Adapt Data Server.</p>
                 </div>
 
-                <pre
-                    class="usage"><span class='fu'>createChart(dateField, ClimateDesc1, ClimateField, tableName</span>)</pre>
+                <pre class="usage"><span class='fu'>Livneh_vic_Data (variables, start year, {end year}, outLoc)</pre>
 
                 <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
                 <table class="ref-arguments">
@@ -172,43 +169,51 @@
                         <col class="desc" />
                     </colgroup>
                     <tr>
-                        <th>dateField</th>
+                        <th>variables</th>
                         <td>
-                            <p>Date field to use as x-axis in chart</p>
+                            <p>Climatic Variables you would like to download from the Cal-Adapt Data Server. A list of
+                                climate variables from CalAdapt (<a href='https://cal-adapt.org/data/livneh-vic/'
+                                    target='_blank'>https://cal-adapt.org/data/livneh-vic/).</a></p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateDesc1</th>
+                        <th>start year</th>
                         <td>
-                            <p>Categorical field describing data, will be used in legend</p>
+                            <p>Choose the first (or only) year to download (years available 1950-2013)</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>ClimateField</th>
+                        <th>end year (Optional)</th>
                         <td>
-                            <p>Climatic variable to plot in chart</p>
+                            <p>Choose the last year (if downloading a range) to download (years available 1950-2013)</p>
                         </td>
                     </tr>
                     <tr>
-                        <th>tableName</th>
+                        <th>outLoc</th>
                         <td>
-                            <p>Table containing the data to chart</p>
+                            <p>Where would you like the data saved.</p>
                         </td>
                     </tr>
                 </table>
 
                 <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-                <p><code>caladapt-py</code> has the ability to store copies of objects downloaded
-                    from Cal-Adapt. An example of this would be the source rasters in netcdf format and tabular data
-                    queried using user defined AOI. Using this function you can easily create a chart in ArcGIS Pro of
-                    the data returned from the CalAdapt API.</p>
+                <p>Download the SCRIPPS Additional VIC Variables (forced by Gridded Observed Data) as NetCDF files from
+                    the Cal-Adapt Data Server.</p>
+                <p>Historical observed daily precipitation and minimum and maximum temperature are used to drive a land
+                    surface/hydrology model, the Variable Infiltration Capacity (VIC) Model to provide high-resolution
+                    projections for a suite of hydrological parameters. The VIC model was originally developed by Xu
+                    Liang at the University of Washington. Development and maintenance of the current official version
+                    of the VIC model is led by the UW Hydro | Computational Hydrology group in the Department of Civil
+                    and Environmental Engineering at the University of Washington.</p>
 
                 <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
                 <div class='dont-index'>
-                    <p><code><a href='returnData.html'>returnData</a></code></p>
-                    <p><code><a href='returnData.html'>createTable</a></code></p>
+                    <p><code><a href='/CA_Drought_Data.pyt.html'>CA Drought Data</a></code></p>
+                    <p><code><a href='/LOCA_Data.pyt.html'>LOCA</a></code></p>
+                    <p><code><a href='/Loca_vic_Data.pyt.html'>LOCA VIC Data</a></code></p>
+                    <p><code><a href='/StreamFlow_Data.pyt.html'>Stream Flow Data</a></code></p>
                 </div>
 
             </div>
