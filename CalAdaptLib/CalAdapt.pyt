@@ -109,8 +109,6 @@ class Livneh_Data(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         baseurl = 'http://albers.cnr.berkeley.edu/data/noaa/livneh/CA_NV'
-        #yearVar = parameters[0].valueAsText
-        #monthVar = parameters[2].valueAsText
         filenameScheme = 'livneh_CA_NV_15Oct2014.%s%s.nc'
         outLoc = parameters[3].valueAsText
 
@@ -129,9 +127,6 @@ class Livneh_Data(object):
             for monthVar in months:
                 filename = filenameScheme % (yearVar, monthVar)
                 status = cal.downloadData(baseurl, outLoc, filename)
-                arcpy.AddMessage([baseurl, outLoc, filename])
-                #if status == 200:
-                #    break
         return
 
 #  This function downloads SCRIPPS data and saves the file to a
@@ -204,17 +199,6 @@ class LOCA_Data(object):
             direction="Input",
             enabled=True)
         
-        # Second parameter
-        '''months = arcpy.Parameter(
-            displayName="Numeric Month",
-            name="months",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        months.filter.list = ['all','01','02','03','04','05','06','07','08','09','10','11','12']
-        months.value = "all"
-        '''
-
         # Third parameter
         outLoc = arcpy.Parameter(
             displayName="Output Location",
@@ -275,29 +259,23 @@ class LOCA_Data(object):
         if parameters[2].altered and parameters[0].valueAsText == 'wspeed':
             if parameters[2].valueAsText == 'historical':
                 parameters[4].filter.list = ['19500101-20051231']
-                #parameters[4].value = "19500101-20051231"
             else:
                 parameters[4].filter.list = ['20060101-20391231','20400101-20691231','20700101-21001231']
-                #parameters[4].value = ""
 
         if parameters[2].altered and parameters[0].valueAsText == 'rel_humid':
             if parameters[2].valueAsText == 'historical':
                 parameters[4].filter.list = ['1950-2005 daily','1950-2005 monthly','1950-2005 average_monthly']
-                #parameters[4].value = "19500101-20051231"
             else:
                 parameters[4].filter.list = ['2006-2100 daily','2006-2100 monthly','2006-2100 average_monthly']
-                #parameters[4].value = ""
 
         if parameters[2].altered and parameters[0].valueAsText == 'solards':
             if parameters[2].valueAsText == 'historical':
                 parameters[4].filter.list = ['19500101-20051231']
-                #parameters[4].value = "19500101-20051231"
             else:
                 if parameters[1].valueAsText == 'HadGEM2-ES':
                     parameters[4].filter.list = ['20060101-20991231']
                 else:
                     parameters[4].filter.list = ['20060101-21001231']
-                #parameters[4].value = ""
                 
         if parameters[4].altered and parameters[0].valueAsText == 'met':
             if parameters[2].valueAsText == 'historical':
@@ -314,16 +292,6 @@ class LOCA_Data(object):
             else:
                 if int(parameters[5].valueAsText) < 2006 or int(parameters[5].valueAsText) > 2100:
                     parameters[5].value = ""
-                    
-        '''
-        if parameters[0].altered or parameters[1].altered or parameters[2].altered or parameters[3].altered:
-            if not parameters[1].valueAsText and not parameters[2].valueAsText == "all":
-                parameters[4].value = '%s/livneh_CA_NV_15Oct2014.%s%s.nc' % (parameters[3].valueAsText, parameters[0].valueAsText, parameters[2].valueAsText)
-                parameters[4].enabled = True
-            else:
-                parameters[4].enabled = False
-                parameters[4].value = ''
-        '''
         return
 
     def updateMessages(self, parameters):
@@ -334,7 +302,6 @@ class LOCA_Data(object):
     def execute(self, parameters, messages):
         """The source code of the tool."""
         baseurl = 'http://albers.cnr.berkeley.edu/data/scripps/loca'
-        #[dataType,climateModel,climateScenario,variables,yearb,yeare,outLoc,outFile]
         dataType = parameters[0].valueAsText
         climateModel = parameters[1].valueAsText
         climateScenario = parameters[2].valueAsText
@@ -354,25 +321,20 @@ class LOCA_Data(object):
                     filename = names[0] % (source)
                     url = '%s/%s' % (baseurl, names[1])
                     status = cal.downloadData(url, outLoc, filename)
-                    arcpy.AddMessage(source)
                     if status == 200:
                         break
         else:
             yearVar = parameters[4].valueAsText
             names = cal.makeFileName(dataType,climateModel,climateScenario,variable,yearVar)
             for source in names[2]:
-                arcpy.AddMessage(names)
                 if not source:
                     filename = names[0]
                 else:
                     filename = names[0] % (source)
                 url = '%s/%s' % (baseurl, names[1])
                 status = cal.downloadData(url, outLoc, filename)
-                arcpy.AddMessage(source)
                 if status == 200:
                     break
-
-        arcpy.AddMessage([url, outLoc, filename])
         return
 
 class CA_Drought_Data(object):
@@ -459,9 +421,6 @@ class CA_Drought_Data(object):
 
             if status == 200:
                 break
-                
-        arcpy.AddMessage(status)
-        arcpy.AddMessage([baseurl, outLoc, filename])
         return
 
 class Livneh_vic_Data(object):
@@ -562,7 +521,6 @@ class Livneh_vic_Data(object):
             status = cal.downloadData(baseurl, outLoc, filename)
             if status == 200:
                 pass
-            arcpy.AddMessage([baseurl, outLoc, filename])
         return
     
 class Loca_vic_Data(object):
@@ -689,12 +647,10 @@ class Loca_vic_Data(object):
         years = range(int(parameters[3].valueAsText),year2)
         
         for yearVar in years:
-            arcpy.AddMessage(yearVar)
             filename = filenameScheme % (variable, yearVar)
             status = cal.downloadData(url, outLoc, filename)
             if status == 200:
                 pass
-            arcpy.AddMessage([url, outLoc, filename])
         return
 
 class StreamFlow_Data(object):
@@ -781,118 +737,12 @@ class StreamFlow_Data(object):
 
         years = ['1950-2100']
         for yearVar in years:
-            arcpy.AddMessage(yearVar)
             filename = filenameScheme % (model, scenario, variable, yearVar)
+            arcpy.AddMessage(filename)
             status = cal.downloadData(baseurl, outLoc, filename)
             if status == 200:
                 break
-            arcpy.AddMessage([baseurl, outLoc, filename])
         return
-
-#  This function downloads MC2 data and saves the file to a
-#  local folder defines by the output location (outLoc)
-'''class MC2_Data(object):
-    def __init__(self):
-        """Define the tool (tool name is the name of the class)."""
-        self.label = "MC2 Data"
-        self.description = "Unknown"
-        self.canRunInBackground = True
-        self.category = "MC2"  
-
-    def getParameterInfo(self):
-        """Define parameter definitions"""
-        # First parameter
-        Model = arcpy.Parameter(
-            displayName="Model",
-            name="Model",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        Model.filter.list = ['LU','PNV','PNV+FS']
-
-        # Second parameter
-        climateModel = arcpy.Parameter(
-            displayName="Climate Model",
-            name="Climate Model",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        climateModel.filter.list = ['CGCM3','Csiro','Miroc3']
-
-        # Third parameter
-        climateScenario = arcpy.Parameter(
-            displayName="Climate Scenario",
-            name="Climate Scenario",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        climateScenario.filter.list = ['A1B','A2','B1']
-        
-        # Fourth parameter
-        variables = arcpy.Parameter(
-            displayName="variables",
-            name="variables",
-            datatype="GPString",
-            parameterType="Required",
-            direction="Input")
-        variables.filter.list = ['C_ECOSYS','C_SOIL_AND_LITTER','C_VEG','CONSUMED','NBP','VTYPE']
-        
-        # Fifth parameter
-        outLoc = arcpy.Parameter(
-            displayName="Output Location",
-            name="outLoc",
-            datatype="DEWorkspace",
-            parameterType="Required",
-            direction="Input")
-
-        # Sixth parameter
-        outFile = arcpy.Parameter(
-            displayName="Output File",
-            name="Output File",
-            datatype="DEFile",
-            parameterType="Derived",
-            direction="Output",
-            enabled=False)
-        
-        params = [Model,climateModel,climateScenario,variables,outLoc,outFile]
-        return params
-
-    def isLicensed(self):
-        """Set whether tool is licensed to execute."""
-        return True
-
-    def updateParameters(self, parameters):
-        """Modify the values and properties of parameters before internal
-        validation is performed.  This method is called whenever a parameter
-        has been changed."""
-        return
-
-    def updateMessages(self, parameters):
-        """Modify the messages created by internal validation for each tool
-        parameter.  This method is called after internal validation."""
-        return
-
-    def execute(self, parameters, messages):
-        """The source code of the tool."""
-        baseurl = 'http://albers.cnr.berkeley.edu/data/gif/MC2'
-        model = parameters[0].valueAsText
-        climateModel = parameters[1].valueAsText
-        climateScenario = parameters[2].valueAsText
-        variable = parameters[3].valueAsText
-        filenameScheme = '%s.nc'
-        outLoc = parameters[4].valueAsText
-        url = '%s/%s/%s/%s' % (baseurl,model,climateScenario,climateModel)
-
-        filename = filenameScheme % (variable)
-        
-        ts = ['t']
-        for t in ts:
-            status = cal.downloadData(url, outLoc, filename)
-            if status == 200:
-                break
-            arcpy.AddMessage([baseurl, outLoc, filename])
-
-        return'''
 
 #  This function downloads UCLA data and saves the file to a
 #  local folder defines by the output location (outLoc)
@@ -914,7 +764,6 @@ class UCLA_Data(object):
             parameterType="Required",
             direction="Input")
         climateModel.filter.list = ['invariant','CNRM-CM5','GFDL-CM3','inmcm4','IPSL-CM5A-LR','MPI-ESM-LR']
-        #climateModel.value = ""
 
         # Second parameter
         climateScenario = arcpy.Parameter(
@@ -980,32 +829,16 @@ class UCLA_Data(object):
         validation is performed.  This method is called whenever a parameter
         has been changed."""
         
-        '''
-        if parameters[1].altered or parameters[2].altered or parameters[3].altered:
-            if parameters[1].value == "Future":
-                arcpy.AddMessage(parameters[2].valueAsText)
-                if int(parameters[2].valueAsText) < 2091 or int(parameters[2].valueAsText) > 2100:
-                    parameters[2].value = ''
-                if int(parameters[3].valueAsText) < 2091 or int(parameters[3].valueAsText) > 2100:
-                    parameters[3].value = ''
-            else:
-                if int(parameters[2].valueAsText) < 1991 or int(parameters[2].valueAsText) > 2000:
-                    parameters[2].value = ''
-                if int(parameters[3].valueAsText) < 1991 or int(parameters[3].valueAsText) > 2000:
-                    parameters[3].value = ''
-        '''
         return
 
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
-        #parameters[3].clearMessage()
 
         return
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-        #params = [climateModel,climateScenario,yearb,yeare,months,outLoc,outFile]
         baseurl = 'http://albers.cnr.berkeley.edu/data/ucla'
         climateModel = parameters[0].valueAsText
         climateScenario = parameters[1].valueAsText
@@ -1018,10 +851,6 @@ class UCLA_Data(object):
             yeare = "None"
         else:
             yeare = parameters[3].valueAsText
-        arcpy.AddMessage(yearb)
-        arcpy.AddMessage(yeare)
-
-        #filenameScheme = 'wrfpost_.%s%s.nc'
         outLoc = parameters[5].valueAsText
 
         if (parameters[3].valueAsText):
@@ -1035,8 +864,6 @@ class UCLA_Data(object):
         else:
             months = [parameters[4].valueAsText]
 
-        arcpy.AddMessage(months)
-
         for yearVar in years:
             for monthVar in months:
                 if climateModel == 'invariant':
@@ -1045,12 +872,7 @@ class UCLA_Data(object):
                     filename = 'wrfpost_%s_d02_%s%s.nc' % (climateModel,yearVar,monthVar)
                 else:
                     filename = 'wrfpost_d02_%s%s.nc' % (yearVar,monthVar)
-                #filename = filenameScheme % (yearVar, monthVar)
                 status = cal.downloadData(baseurl, outLoc, filename)
-                arcpy.AddMessage([baseurl, outLoc, filename])
-                #if status <> 200:
-                #   pass
-               
         return
 #  This function queries the CalAdapy API and shows the data in the tool window
 class GetDataAPI(object):
@@ -1156,8 +978,6 @@ class GetDataAPI(object):
 
         # Use __file__ attribute to find the .lyr file (assuming the
         #  .pyt and .lyr files exist in the same folder)
-        #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
-        
         params = [in_feature_set,individual_features,catField,variable,gcm,period,historical,rcp45,rcp85,vic,stat,outTable]
         return params
 
@@ -1197,7 +1017,6 @@ class GetDataAPI(object):
                 li = []
                 m = arcpy.ListFields(parameters[0].valueAsText)
                 for i in m:
-                    print(i.name)
                     li.append(i.name)
                 parameters[2].filter.list = li
                 
@@ -1214,7 +1033,6 @@ class GetDataAPI(object):
                 
             except:
                 # Could not read the field list
-                #parameters[2].value = ""
                 pass
         
         #incorporate dropdowns and function
@@ -1253,7 +1071,6 @@ class GetDataAPI(object):
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
-        #parameters[3].clearMessage()
 
         return
 
@@ -1276,15 +1093,9 @@ class GetDataAPI(object):
         resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
         cal.freshResourceList(resourceFile)
         
-        #arcpy.AddMessage(outTable)
         zz = outTable.split('\\')
         workspace = "/".join(zz[:-1])
         tableName = zz[-1]
-        
-        #arcpy.AddMessage(outTable1)
-        arcpy.AddMessage(zz)
-        arcpy.AddMessage(workspace)
-        arcpy.AddMessage(tableName)
 
         scenarios = []
         if hist == 'true':
@@ -1299,11 +1110,9 @@ class GetDataAPI(object):
             splitfeatures = True
         else:
             splitfeatures = False
-            
-        #arcpy.AddMessage(scenarios)
+        
         arcpy.env.workspace = workspace
         existTest = arcpy.Exists(tableName)
-        arcpy.AddMessage(existTest)
 
         if splitfeatures == False:
             aoiArray = cal.createWKT(features, splitfeatures)
@@ -1313,29 +1122,11 @@ class GetDataAPI(object):
         for aoi in aoiArray:
             aoiTemp = aoi[0]
             for scenario1 in scenarios:
-                arcpy.AddMessage(aoi)
-                arcpy.AddMessage(scenario1)
-                #arcpy.AddMessage(aoiTemp)
                 CalAdaptFilename = cal.getResourceName(resourceFile, variable=variable1, gcm=gcm1, scenario=scenario1, period=period1)
-                #results = cal.returnData(aoiTemp,scenario1,variable1,gcm1,period1,stat,CalAdaptFilename)
                 results = cal.returnData(aoiTemp,stat,CalAdaptFilename[0])
-                arcpy.AddMessage(results)
                 g = cal.createTable(results,workspace,tableName,aoi, variable1, gcm1, scenario1, period1, stat)
-                #g = cal.createTable(outTable)
             if (splitfeatures == True):
-                arcpy.AddMessage(aoi[3])
-            #arcpy.AddMessage(g)
-
-        #aprx = arcpy.mp.ArcGISProject("current")
-        #map = aprx.listMaps()[0]
-        #table1 = "%s/%s" % ('D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb','caladapt_data')
-        #arcpy.AddMessage(table1)
-        #addTab = arcpy.mp.Table(table1)
-        #lyrTest = 'D:/users/stfeirer/Documents/ArcGIS/Projects/CalAdaptPy_Demo/CalAdaptPy_Demo.gdb/caladapt_data'
-        #arcpy.MakeTableView_management(table1, "caladapt_data")
-        
-        #cal.createChart(g[0],g[1],g[2],g[3])
-            #arcpy.AddMessage(msg)
+                pass
         return
 #  This function queries the CalAdapy API and shows the data in the tool window
 class CreateChart(object):
@@ -1351,7 +1142,6 @@ class CreateChart(object):
         inTable = arcpy.Parameter(
             displayName="Output Table",
             name="outTable",
-            #datatype="DETable",
             datatype="GPTableView",
             parameterType="Required",
             direction="Input")
@@ -1383,8 +1173,6 @@ class CreateChart(object):
 
         # Use __file__ attribute to find the .lyr file (assuming the
         #  .pyt and .lyr files exist in the same folder)
-        #param0.value = os.path.join(os.path.dirname(__file__), "Fire_Station.lyr")
-        
         params = [inTable, dateField, catField, valueField]
         return params
 
@@ -1404,7 +1192,6 @@ class CreateChart(object):
                 li = []
                 m = arcpy.ListFields(parameters[0].valueAsText)
                 for i in m:
-                    print(i.name)
                     li.append(i.name)
                 parameters[1].filter.list = li
                 parameters[2].filter.list = li
@@ -1419,7 +1206,6 @@ class CreateChart(object):
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter.  This method is called after internal validation."""
-        #parameters[3].clearMessage()
 
         return
 

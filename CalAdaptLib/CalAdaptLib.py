@@ -54,30 +54,22 @@ def returnData(wkt, stat, fileName):
         'stat': stat
     }
     
-    #url = 'https://api.cal-adapt.org/api/series/%s_%s_%s_%s/rasters/' % (variable, period, gcm, scenario)
     url = 'https://api.cal-adapt.org/api/series/%s/rasters/' % (fileName)
-    #arcpy.AddMessage([url, stat])
     # Add HTTP header
     headers = {'ContentType': 'json'}
     
     # Make request
     response = requests.post(url, data=params, headers=headers)
     
-    #print(response)
     # It is a good idea to check there were no problems with the request.
     if response.ok:
         data = response.json()
         # Get a list of Raster Stores
         results = data['results']
 
-        # Iterate through the list and print the event and image property of each Raster Store
-        #for item in results:
-            #arcpy.AddMessage(['year:', item['event'], 'value:', item['image'], item['units']])
         return [results, data['count']]
 
 def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenario, period, stat):
-    #data = results[0][0]['slug'].split("_")
-    #data_count = results[1]
     dateField = "DateTime"
     ClimateField = "Value"
     ClimateDesc1 = 'ClimateDesc'
@@ -91,7 +83,6 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
         CatField = fieldName[1]
     arcpy.env.workspace = workspace
     tableName = '%s/%s' % (workspace,tableName1)
-    #arcpy.AddMessage([tableName,arcpy.Exists(tableName)])
 
     if arcpy.Exists(tableName) == False:
         arcpy.management.CreateTable(arcpy.env.workspace, tableName1, None, '')
@@ -160,7 +151,7 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
         cursor = arcpy.da.InsertCursor(tableName,[dateField, VariableField, GCMField, ScenarioField, PeriodField, StatsField, ClimateDesc1, ClimateField, UnitsField])
 
     ClimateDesc = '%s_%s_%s_%s' % (variable,period,gcm,scenario)
-    #if data_count > 1:
+
     if period == 'year':
         for item in results[0]:
             if len(fieldName) > 1:
@@ -177,7 +168,6 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
         for num, img in enumerate(results[0][0]['image'], start=0):
             if len(fieldName) > 1:
                 ClimateDesc2 = '%s_%s' % (ClimateDesc, fieldName[3])
-                #arcpy.AddMessage(ClimateDesc)
                 row = (fieldName[3], dates1[num].strftime('%Y-%m-%d'), variable, gcm, scenario, period, stat, ClimateDesc2, img, results[0][0]["units"])
             else:
                 row = (dates1[num].strftime('%Y-%m-%d'), variable, gcm, scenario, period, stat, ClimateDesc, img, results[0][0]["units"])
@@ -188,7 +178,6 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
             i = dates.split("_")
             j = i[-1]
             dates1 = '12-31-%s' % (j[:4])
-            #arcpy.AddMessage(dates1)
             if len(fieldName) > 1:
                 ClimateDesc2 = '%s_%s' % (ClimateDesc, fieldName[3])
                 row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc2, item['image'], item['units'])
@@ -201,7 +190,6 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
             i = dates.split("_")
             j = i[-1]
             dates1 = '%s-%s-%s' % (j[5:7],j[-2:],j[:4])
-            #arcpy.AddMessage(dates1)
             if len(fieldName) > 1:
                 ClimateDesc2 = '%s_%s' % (ClimateDesc, fieldName[3])
                 row = (fieldName[3], dates1, variable, gcm, scenario, period, stat, ClimateDesc2, item['image'], item['units'])
@@ -212,39 +200,21 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
     return [dateField, ClimateDesc1, ClimateField, tableName1]
 
 def createChart(dateField, ClimateDesc1, ClimateField, tableName):
-
-    #arcpy.AddMessage([dateField,ClimateDesc1,ClimateField,tableName])
     aprx = arcpy.mp.ArcGISProject("current")
     map = aprx.listMaps()[0]
     caladapt_table = map.listTables(tableName)[0]
 
     c = arcpy.Chart('MyChart')
     c.type = 'line'
-    #c.title = 'Population by State'
     c.xAxis.field = dateField
     c.yAxis.field = ClimateField
     c.line.splitCategory = ClimateDesc1
-    #c.xAxis.title = 'State'
-    #c.yAxis.title = 'Total Population'
     c.addToLayer(caladapt_table)
 
-#def createGeoJson(aoi):
-#    geojson = tempfile.gettempdir() + '/temp.geojson'
-#    arcpy.conversion.FeaturesToJSON(aoi, geojson, "NOT_FORMATTED",
-#                                    "NO_Z_VALUES", "NO_M_VALUES", "GEOJSON", "WGS84", "USE_FIELD_NAME")
-#    f = open(geojson, "r")
-#    t = f.read()
-#    f.close()
-#    
-#    return t
-
 def createWKT(aoi, splitFeatures=False, fieldName=''):
-    print(tempfile.gettempdir())
     aoiTemp = tempfile.gettempdir() + "/wkt.shp"
     arcpy.management.Project(aoi, aoiTemp,
                              "GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]")
-    # Enter for loop for each feature
-    #count2 = 0
     wkt = ''
     wktArray = []
 
@@ -287,11 +257,9 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
                 coords = ''
                 x, y = row[0]
                 if count1 == 0:
-                    #coords = coords + '(%s %s)' % (round(x,4), round(y,4))
                     coords = coords + '(%s %s)' % (x,y)
                     count1 = 1
                 else:
-                    #coords = coords + ',(%s %s)' % (round(x,4), round(y,4))
                     coords = coords + ',(%s %s)' % (x,y)
                 wkt = wkt + coords
             wkt = wkt + ")"
@@ -305,17 +273,14 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
                     coords = '('
 
                 # Step through each part of the feature
-                #print(row[1])
                 for part in row[1]:
                     # Step through each vertex in the feature
                     for pnt in part:
                         if pnt:
                             if count1 == 0:
-                                #coords = coords + '%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + '%s %s' % (pnt.X, pnt.Y)
                                 count1 = 1
                             else:
-                                #coords = coords + ',%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + ',%s %s' % (pnt.X, pnt.Y)
                         else:
                             pass
@@ -335,17 +300,9 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
         wktArray.append([wkt])
     else:
         searchFields = ["OID@","SHAPE@","SHAPE@XY",fieldName]
-        #arcpy.AddMessage(searchFields)
         for row in arcpy.da.SearchCursor(aoiTemp, searchFields):
             count2 = 0
-            #if count1 > 0:
             wkt = ''
-            #if shpType == 'Point':
-            #    wkt = wkt + 'POINT'
-            #elif shpType == 'Polygon':
-            #    wkt = wkt + 'POLYGON'
-            #elif shpType == 'Polyline':
-            #    wkt = wkt + 'LINESTRING'
 
             if shpType == 'Point':
                 wkt = wkt + 'MULTIPOINT'
@@ -359,7 +316,6 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
             if shpType == 'Point':
                 coords = ''
                 x, y = row[2]
-                #coords = coords + '(%s %s)' % (round(x,4), round(y,4))
                 coords = coords + '(%s %s)' % (x,y)
                 wkt = wkt + coords
                 wkt = wkt + ")"
@@ -377,11 +333,9 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
                     for pnt in part:
                         if pnt:
                             if count1 == 0:
-                                #coords = coords + '%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + '%s %s' % (pnt.X, pnt.Y)
                                 count1 = 1
                             else:
-                                #coords = coords + ',%s %s' % (round(pnt.X,4), round(pnt.Y,4))
                                 coords = coords + ',%s %s' % (pnt.X, pnt.Y)
                         else:
                             pass
@@ -398,7 +352,6 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
                         wkt = wkt + ')'
 
                 wkt = wkt + ')'
-            #count1 = 1
             wktArray.append([wkt,fldName,fldType,row[3]])
                 
     return wktArray
@@ -416,23 +369,15 @@ def getVariables(dataFile, variable="", gcm="", period="", scenario=""):
     data1['Scenario'] = data1["Scenario"].str.lower()
         
     if variable != "":
-        #print(variable)
-        #data1 = data1[data1.Variable.str.contains(variable)]
         data1 = data1[data1['Variable'] == variable]
         
     if period != "":
-        #print(period)
-        #data1 = data1[data1.Period.str.contains(period)]
         data1 = data1[data1['Period'] == period]
         
     if gcm != "":
-        #print(gcm)
-        #data1 = data1[data1.GCM.str.contains(gcm)]
         data1 = data1[data1['GCM'] == gcm]
         
     if scenario != "":
-        #print(scenario)
-        #data1 = data1[data1.Scenario.str.contains(scenario)]
         data1 = data1[data1['Scenario'] == scenario]
     
     uniquePeriod = data1.drop_duplicates(subset=['Period'])
