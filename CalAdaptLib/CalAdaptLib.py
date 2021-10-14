@@ -442,7 +442,7 @@ def freshResourceList(resourceFile):
     weeks = days/7
 
     if weeks > 1:
-        arcpy.AddMessage("Refreshing CalAdapt Resource List")
+        arcpy.AddMessage("Refreshing Cal-Adapt Resource List")
         # Query parameters dict
         params = {'name': '', 'pagesize': 100000}
 

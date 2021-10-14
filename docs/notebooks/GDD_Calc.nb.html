@@ -16376,14 +16376,14 @@ Adapted from GitHub theme
           <div class="text_cell_render border-box-sizing rendered_html">
             <h1
               id="Introduction-to-the-advanced-functionality-of-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)-for-custom-analyses">
-              Introduction to the advanced functionality of the CalAdapt Python Toolbox and the CalAdapt Library (helper
+              Introduction to the advanced functionality of the Cal-Adapt Python Toolbox and the Cal-Adapt Library (helper
               module) for custom analyses<a class="anchor-link"
                 href="#Introduction-to-the-advanced-functionality-of-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)-for-custom-analyses">&#182;</a>
             </h1>
             <h3
               id="This-cookbook-demonstrated-using-the-CalAdapt-Python-Toolbox-in-a-Jupyter-Notebook-to-perform-an-advanced-analyses-of-the-downloaded-NetCDF-data-from-the-Cal-Adapt-FTP-Servers.">
-              This cookbook demonstrated using the CalAdapt Python Toolbox in a Jupyter Notebook to perform an advanced
-              analyses of the downloaded NetCDF data from the Cal Adapt FTP Servers.<a class="anchor-link"
+              This cookbook demonstrated using the Cal-Adapt Python Toolbox in a Jupyter Notebook to perform an advanced
+              analyses of the downloaded NetCDF data from the Cal Adapt Cal-Adapt Data Servers.<a class="anchor-link"
                 href="#This-cookbook-demonstrated-using-the-CalAdapt-Python-Toolbox-in-a-Jupyter-Notebook-to-perform-an-advanced-analyses-of-the-downloaded-NetCDF-data-from-the-Cal-Adapt-FTP-Servers.">&#182;</a>
             </h3>
             <h4 id="To-complete-this-notebook-you-will-need-to-add-a-package-to-your-ArcGIS-Python-environment.">To
@@ -16403,7 +16403,7 @@ Adapted from GitHub theme
               and seach and install DASK.</p>
             <h4
               id="To-use-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)-please-do-the-following">
-              To use the CalAdapt Python Toolbox and the CalAdapt Library (helper module) please do the following<a
+              To use the Cal-Adapt Python Toolbox and the Cal-Adapt Library (helper module) please do the following<a
                 class="anchor-link"
                 href="#To-use-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)-please-do-the-following">&#182;</a>
             </h4>
@@ -16422,7 +16422,7 @@ Adapted from GitHub theme
             <h2
               id="In-this-Notebook-we-will-demonstrate-how-to-download-and-analyze-the-netcdf-data-available-on-the-CalAdapt-FTP-server.">
               In this Notebook we will demonstrate how to download and analyze the netcdf data available on the CalAdapt
-              FTP server.<a class="anchor-link"
+              Cal-Adapt Data Server.<a class="anchor-link"
                 href="#In-this-Notebook-we-will-demonstrate-how-to-download-and-analyze-the-netcdf-data-available-on-the-CalAdapt-FTP-server.">&#182;</a>
             </h2>
             <p>In this analysis we will download and analyze 5 years worth of climate data to look at how the cumulative
@@ -16683,7 +16683,7 @@ Adapted from GitHub theme
             <p>These variables set the paths for saving outputs data functions and the set the parametrs needed to
               download the climate models (<a
                 href="https://berkeley-gif.github.io/caladapt-docs/data-catalog.html#global-climate-models-gcm">https://berkeley-gif.github.io/caladapt-docs/data-catalog.html#global-climate-models-gcm</a>)
-              from the CalAdapt Data Server and set the time periods of interest.</p>
+              from the Cal-Adapt Data Server and set the time periods of interest.</p>
             <p><em>!!!Change the 'netcdf_loc' and 'gdd_loc' varibles to match the locations on your computer</em></p>
             <p><em>!!!In this example we are calculating Growing Degree Day for the Water Year (October 1 - September
                 30th), due to this we need to include at least 2 years. Therefore if you were going to calculate growing
@@ -16703,7 +16703,7 @@ Adapted from GitHub theme
                 <pre><span></span><span class="c1"># Climate variables of interest, both minimum and maximun air temperature</span>
 <span class="n">variables</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;tasmin&#39;</span><span class="p">,</span><span class="s1">&#39;Tasmax&#39;</span><span class="p">)</span>
 
-<span class="c1"># Path to the location to save the netcdf data from the CalAdapt Dataserver</span>
+<span class="c1"># Path to the location to save the netcdf data from the Cal-Adapt Dataserver</span>
 <span class="n">netcdf_loc</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;D:\Data\ArcGIS\Projects\CalAdapt_Cookbook\netcdf&quot;</span>
 
 <span class="c1"># Path to the location to save the GDD netcdf data created by running the GDD Script</span>

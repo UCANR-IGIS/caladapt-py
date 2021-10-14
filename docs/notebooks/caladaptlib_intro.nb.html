@@ -16376,19 +16376,19 @@ Adapted from GitHub theme
           <div class="text_cell_render border-box-sizing rendered_html">
             <h1
               id="Introduction-to-the-basic-functionality-of-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)">
-              Introduction to the basic functionality of the CalAdapt Python Toolbox and the CalAdapt Library (helper
+              Introduction to the basic functionality of the Cal-Adapt Python Toolbox and the Cal-Adapt Library (helper
               module)<a class="anchor-link"
                 href="#Introduction-to-the-basic-functionality-of-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)">&#182;</a>
             </h1>
             <h3
               id="This-notebook-will-demostrate-how-to-query-the-CalAdapt-API-using-custom-Area-of-Interests-(AOI)-derived-from-gis-data-(points,-lines,-and-polygons).">
-              This notebook will demostrate how to query the CalAdapt API using custom Area of Interests (AOI) derived
+              This notebook will demostrate how to query the Cal-Adapt API using custom Area of Interests (AOI) derived
               from gis data (points, lines, and polygons).<a class="anchor-link"
                 href="#This-notebook-will-demostrate-how-to-query-the-CalAdapt-API-using-custom-Area-of-Interests-(AOI)-derived-from-gis-data-(points,-lines,-and-polygons).">&#182;</a>
             </h3>
             <h4
               id="To-use-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)-please-do-the-following">
-              To use the CalAdapt Python Toolbox and the CalAdapt Library (helper module) please do the following<a
+              To use the Cal-Adapt Python Toolbox and the Cal-Adapt Library (helper module) please do the following<a
                 class="anchor-link"
                 href="#To-use-the-CalAdapt-Python-Toolbox-and-the-CalAdapt-Library-(helper-module)-please-do-the-following">&#182;</a>
             </h4>
@@ -16406,21 +16406,21 @@ Adapted from GitHub theme
           <div class="text_cell_render border-box-sizing rendered_html">
             <h3
               id="To-query-the-CalAdapt-API-using-custom-Area-of-Interests-(AOI)-and-to-chart-the-results-using-the-CalAdapt-Python-Toolbox-with-ArcGIS-Pro">
-              To query the CalAdapt API using custom Area of Interests (AOI) and to chart the results using the CalAdapt
+              To query the Cal-Adapt API using custom Area of Interests (AOI) and to chart the results using the CalAdapt
               Python Toolbox with ArcGIS Pro<a class="anchor-link"
                 href="#To-query-the-CalAdapt-API-using-custom-Area-of-Interests-(AOI)-and-to-chart-the-results-using-the-CalAdapt-Python-Toolbox-with-ArcGIS-Pro">&#182;</a>
             </h3>
             <h4 id="To-get-data-from-the-API">To get data from the API<a class="anchor-link"
                 href="#To-get-data-from-the-API">&#182;</a></h4>
-            <p>Open the Get Data from API in the CalAdapt - API Toolset, populate the parameter in the toolbox (see
+            <p>Open the Get Data from API in the Cal-Adapt - API Toolset, populate the parameter in the toolbox (see
               image below), and execute the tool by clicking run.
               <img src="GetData.png" alt="">
-              After the tool successfully runs the data returned from the CalAdapt API will be saved in the File
+              After the tool successfully runs the data returned from the Cal-Adapt API will be saved in the File
               Geodatabase you specified in the tool.
               <img src="TableData.png" alt=""></p>
             <h4 id="To-chart-the-results-returned-from-the-API">To chart the results returned from the API<a
                 class="anchor-link" href="#To-chart-the-results-returned-from-the-API">&#182;</a></h4>
-            <p>Open the Chart Data from API in the CalAdapt - API Toolset, populate the parameter in the toolbox (see
+            <p>Open the Chart Data from API in the Cal-Adapt - API Toolset, populate the parameter in the toolbox (see
               image below), and execute the tool by clicking run.
               <img src="ChartDataTool.png" alt="">
               After the tool successfully runs the chart will be added to the map within ArcGIS Pro. Open the chart and
@@ -16437,7 +16437,7 @@ Adapted from GitHub theme
           <div class="text_cell_render border-box-sizing rendered_html">
             <h3
               id="To-query-the-CalAdapt-API-using-custom-Area-of-Interests-(AOI)-and-to-chart-the-results-using-the-CalAdapt-Python-Toolbox-using-a-Jupyter-Notebook-(Python)-inside-or-outside-ArcGIS-Pro.">
-              To query the CalAdapt API using custom Area of Interests (AOI) and to chart the results using the CalAdapt
+              To query the Cal-Adapt API using custom Area of Interests (AOI) and to chart the results using the CalAdapt
               Python Toolbox using a Jupyter Notebook (Python) inside or outside ArcGIS Pro.<a class="anchor-link"
                 href="#To-query-the-CalAdapt-API-using-custom-Area-of-Interests-(AOI)-and-to-chart-the-results-using-the-CalAdapt-Python-Toolbox-using-a-Jupyter-Notebook-(Python)-inside-or-outside-ArcGIS-Pro.">&#182;</a>
             </h3>
@@ -16453,10 +16453,10 @@ Adapted from GitHub theme
                 <pre><span></span><span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">arcpy</span>
 
-<span class="c1"># Import CalAdapt Python Toolbox into the Jupyter Notebook</span>
+<span class="c1"># Import Cal-Adapt Python Toolbox into the Jupyter Notebook</span>
 <span class="n">arcpy</span><span class="o">.</span><span class="n">ImportToolbox</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;D:\Data\ArcGIS\Projects\CalAdaptpy_Test\CalAdaptLib\CalAdapt.pyt&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
 
-<span class="c1"># Import CalAdapt Library into the Jupyter Notebook.  This library exposes helper functions that are used to work with the caladapt api and ftp server</span>
+<span class="c1"># Import Cal-Adapt Library into the Jupyter Notebook.  This library exposes helper functions that are used to work with the Cal-Adapt api and Cal-Adapt Data Server</span>
 <span class="kn">import</span> <span class="nn">CalAdaptLib</span> <span class="k">as</span> <span class="nn">cal</span>
 
 <span class="c1"># Custom Area of Interest (AOI), in this case the Russian River Basin in the north coast of California</span>
@@ -16559,7 +16559,7 @@ Adapted from GitHub theme
           <div class="text_cell_render border-box-sizing rendered_html">
             <h3
               id="The-GetDataAPI-tool-in-the-toolbox-will-retrieve-data-from-the-CalAdapt-API-for-one-GCM.--If-you-want-to-analyze-more-than-one-GCM-for-a-AOI-you-have-two-options.">
-              The GetDataAPI tool in the toolbox will retrieve data from the CalAdapt API for one GCM. If you want to
+              The GetDataAPI tool in the toolbox will retrieve data from the Cal-Adapt API for one GCM. If you want to
               analyze more than one GCM for a AOI you have two options.<a class="anchor-link"
                 href="#The-GetDataAPI-tool-in-the-toolbox-will-retrieve-data-from-the-CalAdapt-API-for-one-GCM.--If-you-want-to-analyze-more-than-one-GCM-for-a-AOI-you-have-two-options.">&#182;</a>
             </h3>
@@ -16567,15 +16567,15 @@ Adapted from GitHub theme
               <li>You can run the tool twice with different GCMs and save the results in different tables. You must save
                 the results to different tables, because GetDataAPI tool will overwrite the data in the table with each
                 run. How ever if you use the next method you will not overwrite the data in the table.</li>
-              <li>Or, you can use python and the helper function in the CalAdapt library to complete your tasks.</li>
+              <li>Or, you can use python and the helper function in the Cal-Adapt library to complete your tasks.</li>
             </ul>
-            <p>The steps to complete this task using the CalAdapt library are the following:</p>
+            <p>The steps to complete this task using the Cal-Adapt library are the following:</p>
             <ol>
               <li>Refresh Resource List from API (if resource list is older than 1 week, the function will refresh list)
               </li>
               <li>Create a Well Known Text (WKT) of your area of interest (AOI)</li>
-              <li>Query resource list to get resource to query on the CalAdapt API</li>
-              <li>Return data from the CalAdapt API</li>
+              <li>Query resource list to get resource to query on the Cal-Adapt API</li>
+              <li>Return data from the Cal-Adapt API</li>
               <li>Create table in File Geodatabase and save results in table</li>
               <li>Create chart of results</li>
             </ol>
@@ -16590,8 +16590,8 @@ Adapted from GitHub theme
           <div class="text_cell_render border-box-sizing rendered_html">
             <h4
               id="1.-New-resources-are-being-added-to-the-CalAdapt-API-all-the-time.--To-account-for-this-the-CalAdapt-Python-Toolbox-and-CalAdapt-Library-queries-the-API-and-generates-a-list-of-available-resources-for-the-tools.--The-tools-refresh-the-resource-list-if-the-list-on-the-computer-is-older-than-1-week.">
-              1. New resources are being added to the CalAdapt API all the time. To account for this the CalAdapt Python
-              Toolbox and CalAdapt Library queries the API and generates a list of available resources for the tools.
+              1. New resources are being added to the Cal-Adapt API all the time. To account for this the Cal-Adapt Python
+              Toolbox and Cal-Adapt Library queries the API and generates a list of available resources for the tools.
               The tools refresh the resource list if the list on the computer is older than 1 week.<a
                 class="anchor-link"
                 href="#1.-New-resources-are-being-added-to-the-CalAdapt-API-all-the-time.--To-account-for-this-the-CalAdapt-Python-Toolbox-and-CalAdapt-Library-queries-the-API-and-generates-a-list-of-available-resources-for-the-tools.--The-tools-refresh-the-resource-list-if-the-list-on-the-computer-is-older-than-1-week.">&#182;</a>
@@ -16605,7 +16605,7 @@ Adapted from GitHub theme
           <div class="inner_cell">
             <div class="input_area">
               <div class=" highlight hl-ipython3">
-                <pre><span></span><span class="c1"># get the local path to the CalAdapt Library, the resourcelist is stored there as well</span>
+                <pre><span></span><span class="c1"># get the local path to the Cal-Adapt Library, the resourcelist is stored there as well</span>
 <span class="n">libPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">cal</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span>
 <span class="n">resourceFile</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">%</span>  <span class="p">(</span><span class="n">libPath</span><span class="p">,</span> <span class="s1">&#39;datasets.txt&#39;</span><span class="p">)</span>
 <span class="n">cal</span><span class="o">.</span><span class="n">freshResourceList</span><span class="p">(</span><span class="n">resourceFile</span><span class="p">)</span>
@@ -16624,8 +16624,8 @@ Adapted from GitHub theme
           <div class="text_cell_render border-box-sizing rendered_html">
             <h4
               id="2.-The-CalAdapt-API-has-been-designed-to-work-with-custom-Areas-of-Interest-(AOI).--These-AOIs-can-be-represented-as-geojson-or-Well-Known-Text-(WKT).--The-CalAdapt-Python-Toolbox-and-CalAdapt-Library-utilizes-WKT-to-represnt-the-AOI-geometries.--The-cal.createWKT()-will-take-a-point,-line,-or-polygon-dataset-and-generates-a-WKT-representation-for-use-in-the-tools.">
-              2. The CalAdapt API has been designed to work with custom Areas of Interest (AOI). These AOIs can be
-              represented as geojson or Well Known Text (WKT). The CalAdapt Python Toolbox and CalAdapt Library utilizes
+              2. The Cal-Adapt API has been designed to work with custom Areas of Interest (AOI). These AOIs can be
+              represented as geojson or Well Known Text (WKT). The Cal-Adapt Python Toolbox and Cal-Adapt Library utilizes
               WKT to represnt the AOI geometries. The cal.createWKT() will take a point, line, or polygon dataset and
               generates a WKT representation for use in the tools.<a class="anchor-link"
                 href="#2.-The-CalAdapt-API-has-been-designed-to-work-with-custom-Areas-of-Interest-(AOI).--These-AOIs-can-be-represented-as-geojson-or-Well-Known-Text-(WKT).--The-CalAdapt-Python-Toolbox-and-CalAdapt-Library-utilizes-WKT-to-represnt-the-AOI-geometries.--The-cal.createWKT()-will-take-a-point,-line,-or-polygon-dataset-and-generates-a-WKT-representation-for-use-in-the-tools.">&#182;</a>
@@ -16684,7 +16684,7 @@ createWKT(aoi, splitFeatures=False, fieldName=&#39;&#39;)
           <div class="text_cell_render border-box-sizing rendered_html">
             <h4
               id="3.-The-CalAdapt-API-serves-many-datasets-via-the-API.--These-datasets-can-be-retrieved-based-on-the-predefined-names.--The-cal.getResourceName()-function-will-take-a-series-of-parameters-to-help-narrow-down-the-list-of-resources-for-you-analaysis.">
-              3. The CalAdapt API serves many datasets via the API. These datasets can be retrieved based on the
+              3. The Cal-Adapt API serves many datasets via the API. These datasets can be retrieved based on the
               predefined names. The cal.getResourceName() function will take a series of parameters to help narrow down
               the list of resources for you analaysis.<a class="anchor-link"
                 href="#3.-The-CalAdapt-API-serves-many-datasets-via-the-API.--These-datasets-can-be-retrieved-based-on-the-predefined-names.--The-cal.getResourceName()-function-will-take-a-series-of-parameters-to-help-narrow-down-the-list-of-resources-for-you-analaysis.">&#182;</a>
@@ -16748,9 +16748,9 @@ getResourceName(dataFile, variable=&#39;&#39;, gcm=&#39;&#39;, period=&#39;&#39;
           <div class="text_cell_render border-box-sizing rendered_html">
             <h4
               id="4.-Using-the-data-generated-in-the-previous-2-steps-to-query-the-CalAdapt-API.--Use-the-cal.returnData()-function-to-request-data-from-the-API.--One-additional-parameter-needs-to-be-set,-this-paratmeter-is-the-stat-parameter.--The-CalAdapt-API-will-summarize-all-the-cells-with-your-AOI-and-report-back-the-statistic-that-you-request.--Potential-statistics-include-max,-mean,-median,-min,-and-sum.">
-              4. Using the data generated in the previous 2 steps to query the CalAdapt API. Use the cal.returnData()
+              4. Using the data generated in the previous 2 steps to query the Cal-Adapt API. Use the cal.returnData()
               function to request data from the API. One additional parameter needs to be set, this paratmeter is the
-              stat parameter. The CalAdapt API will summarize all the cells with your AOI and report back the statistic
+              stat parameter. The Cal-Adapt API will summarize all the cells with your AOI and report back the statistic
               that you request. Potential statistics include max, mean, median, min, and sum.<a class="anchor-link"
                 href="#4.-Using-the-data-generated-in-the-previous-2-steps-to-query-the-CalAdapt-API.--Use-the-cal.returnData()-function-to-request-data-from-the-API.--One-additional-parameter-needs-to-be-set,-this-paratmeter-is-the-stat-parameter.--The-CalAdapt-API-will-summarize-all-the-cells-with-your-AOI-and-report-back-the-statistic-that-you-request.--Potential-statistics-include-max,-mean,-median,-min,-and-sum.">&#182;</a>
             </h4>
@@ -16808,7 +16808,7 @@ returnData(wkt, stat, fileName)
           <div class="text_cell_render border-box-sizing rendered_html">
             <h4
               id="5.-The-previous-step-returned-the-results-from-the-CalAdapt-API.--Now-lets-create-a-table-in-a-File-Geodatabase-and-save-the-results-in-the-table.">
-              5. The previous step returned the results from the CalAdapt API. Now lets create a table in a File
+              5. The previous step returned the results from the Cal-Adapt API. Now lets create a table in a File
               Geodatabase and save the results in the table.<a class="anchor-link"
                 href="#5.-The-previous-step-returned-the-results-from-the-CalAdapt-API.--Now-lets-create-a-table-in-a-File-Geodatabase-and-save-the-results-in-the-table.">&#182;</a>
             </h4>
@@ -16922,7 +16922,7 @@ createChart(dateField, ClimateDesc1, ClimateField, tableName)
           <div class="text_cell_render border-box-sizing rendered_html">
             <h3
               id="Let's-take-all-that-we-learned-above-and-create-a-small-script-to-query-the-CalAdapt-API-for-2-Global-Climate-Models-and-3-different-Scenarios-and-save-the-results-in-a-table-in-a-File-Geodatabase.">
-              Let's take all that we learned above and create a small script to query the CalAdapt API for 2 Global
+              Let's take all that we learned above and create a small script to query the Cal-Adapt API for 2 Global
               Climate Models and 3 different Scenarios and save the results in a table in a File Geodatabase.<a
                 class="anchor-link"
                 href="#Let's-take-all-that-we-learned-above-and-create-a-small-script-to-query-the-CalAdapt-API-for-2-Global-Climate-Models-and-3-different-Scenarios-and-save-the-results-in-a-table-in-a-File-Geodatabase.">&#182;</a>
