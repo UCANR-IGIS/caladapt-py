@@ -15,7 +15,7 @@ See also: <https://ucanr-igis.github.io/caladapt-py/>
 
 `caladapt-py` allows you to:
 
-*   download netcdf data from the Cal-Adapt FTP site. These data allow for custom analyzes to be conducted at the statewide scale using GIS.
+*   download netCDF data from the Cal-Adapt Data Server using HTTPS. These data allow for custom analyzes to be conducted at the statewide scale using GIS.
 *   retrieve values by user defined points, lines, or polygons
 *   store results in File Geodatabase tables and other table types
 
@@ -28,7 +28,7 @@ See also: <https://ucanr-igis.github.io/caladapt-py/>
 [](#installation)Installation
 -----------------------------
 
-`caladapt-py` is hosted on [GitHub](https://github.com/ucanr-igis/caladapt-py). To install, download the [zip](../CalAdaptPy.zip) file from github and uncompress the zip file  into your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use the tools in the toolbox. For Python, import the libarary and use the different modules as needed.
+`caladapt-py` is hosted on [GitHub](https://github.com/ucanr-igis/caladapt-py). To install, download the [zip](../CalAdaptPy.zip) file from github and uncompress the zip file into your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use the tools in the toolbox. For Python, import the CalAdaptLib package and use the different modules as needed.
 
 [](#general-workflow)General Workflow
 -------------------------------------
@@ -37,8 +37,8 @@ See also: <https://ucanr-igis.github.io/caladapt-py/>
 <img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/pythonToolbox.png"/>
 
 1. Add toolbox to ArcGIS Pro Project
-2. Run tool to download resultrs from user defined areas
-3. Run tools to download netcdf datasets
+2. Run tool to download results from user defined areas
+3. Run tools to download netCDF datasets
 4. Perform additional GIS analyzes based on returned data
 
 ### Python (Jupyter Notebook)
@@ -50,7 +50,7 @@ In general, there are three steps to getting data via the Cal-Adapt API:
     `import arcpy`
     
 2. Add toolbox to ArcGIS Pro Project
-3. In jupyter Notebook refence both the CalAdapy.pyt toolbox and the CalAdaptLib.py module
+3. In jupyter Notebook reference both the CalAdapy.pyt toolbox and the CalAdaptLib.py module
     
     `arcpy.ImportToolbox(r'D:\Data\ArcGIS\Projects\CalAdapt_Cookbook\CalAdaptLib\CalAdapt.pyt','')`
     

@@ -13,7 +13,7 @@ class Toolbox(object):
     def __init__(self):
         """Define the toolbox (the name of the toolbox is the name of the
         .pyt file)."""
-        self.label = "CalAdapt ArcGIS Tools"
+        self.label = "Cal-Adapt ArcGIS Tools"
         self.alias = ""
 
         # List of tool classes associated with this toolbox
@@ -881,7 +881,7 @@ class GetDataAPI(object):
         self.label = "Get Data from API"
         self.description = ""
         self.canRunInBackground = True
-        self.category = "CalAdapt - API"  
+        self.category = "Cal-Adapt - API"  
 
     def getParameterInfo(self):
         in_feature_set = arcpy.Parameter(
@@ -1135,7 +1135,7 @@ class CreateChart(object):
         self.label = "Chart Data from API"
         self.description = ""
         self.canRunInBackground = True
-        self.category = "CalAdapt - API"  
+        self.category = "Cal-Adapt - API"  
 
     def getParameterInfo(self):
 
