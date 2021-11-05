@@ -28,7 +28,7 @@ See also: <https://ucanr-igis.github.io/caladapt-py/>
 [](#installation)Installation
 -----------------------------
 
-`caladapt-py` is hosted on [GitHub](https://github.com/ucanr-igis/caladapt-py). To install, download the [zip](../CalAdaptPy.zip) file from github and uncompress the zip file into your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use the tools in the toolbox. For Python, import the CalAdaptLib package and use the different modules as needed.
+`caladapt-py` is hosted on [GitHub](https://github.com/ucanr-igis/caladapt-py). To install, download the [zip](https://github.com/UCANR-IGIS/caladapt-py/raw/master/CalAdaptPy.zip) file from github and uncompress the zip file into your project folder. For ArcGIS, load the python toolbox into your ArcGIS Project and use the tools in the toolbox. For Python, import the CalAdaptLib package and use the different modules as needed.
 
 [](#general-workflow)General Workflow
 -------------------------------------
