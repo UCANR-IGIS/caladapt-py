@@ -1,10 +1,12 @@
-import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd, copy
+import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd, copy, warnings
 arcpy.env.overwriteOutput = True
  
 def downloadData(baseurl, outLoc, filename):
     try:
         url = '%s/%s' % (baseurl, filename)
-        r = requests.get(url, allow_redirects=True)
+        warnings.filterwarnings("ignore")
+        r = requests.get(url, allow_redirects=True, verify = False)
+        warnings.filterwarnings("default")
         filename = '%s/%s' % (outLoc, filename)
 
         r.status_code
@@ -49,7 +51,7 @@ def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
 def returnData(wkt, stat, fileName):
     # Query parameters dict
     params = {
-        'pagesize': 1000,
+        'pagesize': 2000,
         'g': wkt,
         'stat': stat
     }
@@ -59,8 +61,9 @@ def returnData(wkt, stat, fileName):
     headers = {'ContentType': 'json'}
     
     # Make request
-    response = requests.post(url, data=params, headers=headers)
-    
+    warnings.filterwarnings("ignore")
+    response = requests.post(url, data=params, headers=headers, verify = False)
+    warnings.filterwarnings("default")
     # It is a good idea to check there were no problems with the request.
     if response.ok:
         data = response.json()
@@ -442,12 +445,14 @@ def freshResourceList(resourceFile):
     weeks = days/7
 
     if weeks > 1:
-        arcpy.AddMessage("Refreshing Cal-Adapt Resource List")
+        arcpy.AddMessage("Refreshing CalAdapt Resource List")
         # Query parameters dict
         params = {'name': '', 'pagesize': 100000}
 
         # Use params with the url.
-        response = requests.get('http://api.cal-adapt.org/api/series/', params=params)
+        warnings.filterwarnings("ignore")
+        response = requests.get('https://api.cal-adapt.org/api/series/', params=paramsrequests, verify = False)
+        warnings.filterwarnings("default")
 
         # It is a good idea to check there were no problems with the request.
         if response.ok:
