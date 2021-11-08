@@ -1,4 +1,4 @@
-import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd, copy, warnings
+import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd, copy, warnings, math
 arcpy.env.overwriteOutput = True
  
 def downloadData(baseurl, outLoc, filename):
@@ -50,8 +50,9 @@ def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
 #def returnData(wkt, scenario, variable, gcm, period, stat, fileName):
 def returnData(wkt, stat, fileName):
     # Query parameters dict
+    pagesize1 = 250
     params = {
-        'pagesize': 2000,
+        'pagesize': pagesize1,
         'g': wkt,
         'stat': stat
     }
@@ -69,6 +70,25 @@ def returnData(wkt, stat, fileName):
         data = response.json()
         # Get a list of Raster Stores
         results = data['results']
+
+        pagecnt = math.ceil(data['count']/pagesize1) + 1
+        if data['count'] >= pagesize1:
+            for i in range(2,pagecnt,1):
+                params = {
+                    'pagesize': pagesize1,
+                    'g': wkt,
+                    'stat': stat,
+                    'page': i
+                }           
+
+                warnings.filterwarnings("ignore")
+                response = requests.post(url, data=params, headers=headers, verify = False)
+                warnings.filterwarnings("default")
+                # It is a good idea to check there were no problems with the request.
+                if response.ok:
+                    data = response.json()
+                    # Get a list of Raster Stores
+                    results = results + data['results']
 
         return [results, data['count']]
 
@@ -215,14 +235,24 @@ def createChart(dateField, ClimateDesc1, ClimateField, tableName):
     c.addToLayer(caladapt_table)
 
 def createWKT(aoi, splitFeatures=False, fieldName=''):
-    aoiTemp = tempfile.gettempdir() + "/wkt.shp"
-    arcpy.management.Project(aoi, aoiTemp,
+    aoiTemp2 = tempfile.gettempdir() + "/wkt1.shp"
+    arcpy.management.Project(aoi, aoiTemp2,
                              "GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]")
     wkt = ''
     wktArray = []
 
-    t = arcpy.Describe(aoiTemp)
+    t = arcpy.Describe(aoiTemp2)
     shpType = t.shapeType
+
+    aoiTemp = tempfile.gettempdir() + "/wkt.shp"
+    
+    ###  Need to build in simplification of poly and line
+    if shpType == 'Point':
+        aoiTemp = aoiTemp2
+    elif shpType == 'Polygon':
+        arcpy.cartography.SimplifyPolygon(aoiTemp2, aoiTemp, "POINT_REMOVE", "0.1 Kilometers", "3 SquareKilometers", "RESOLVE_ERRORS", "NO_KEEP", None)
+    elif shpType == 'Polyline':
+        arcpy.cartography.SimplifyLine(aoiTemp2, aoiTemp, "POINT_REMOVE", "0.1 Kilometers", "RESOLVE_ERRORS", "NO_KEEP", "CHECK", None)
 
     if splitFeatures==True:
         aoiTemp1 = tempfile.gettempdir() + "/wktDissolved.shp"
