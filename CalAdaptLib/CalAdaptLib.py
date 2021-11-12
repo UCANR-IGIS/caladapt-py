@@ -50,7 +50,7 @@ def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
 #def returnData(wkt, scenario, variable, gcm, period, stat, fileName):
 def returnData(wkt, stat, fileName):
     # Query parameters dict
-    pagesize1 = 250
+    pagesize1 = 1000
     params = {
         'pagesize': pagesize1,
         'g': wkt,
@@ -250,7 +250,7 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
     if shpType == 'Point':
         aoiTemp = aoiTemp2
     elif shpType == 'Polygon':
-        arcpy.cartography.SimplifyPolygon(aoiTemp2, aoiTemp, "POINT_REMOVE", "0.1 Kilometers", "3 SquareKilometers", "RESOLVE_ERRORS", "NO_KEEP", None)
+        arcpy.cartography.SimplifyPolygon(aoiTemp2, aoiTemp, "POINT_REMOVE", "100 Meters", "10000 SquareMeters", "RESOLVE_ERRORS", "NO_KEEP", None)
     elif shpType == 'Polyline':
         arcpy.cartography.SimplifyLine(aoiTemp2, aoiTemp, "POINT_REMOVE", "0.1 Kilometers", "RESOLVE_ERRORS", "NO_KEEP", "CHECK", None)
 
@@ -481,7 +481,7 @@ def freshResourceList(resourceFile):
 
         # Use params with the url.
         warnings.filterwarnings("ignore")
-        response = requests.get('https://api.cal-adapt.org/api/series/', params=paramsrequests, verify = False)
+        response = requests.get('https://api.cal-adapt.org/api/series/', params=params, verify = False)
         warnings.filterwarnings("default")
 
         # It is a good idea to check there were no problems with the request.
