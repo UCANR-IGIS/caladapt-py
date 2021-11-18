@@ -5,6 +5,8 @@ try:
     import requests 
     import urllib3, shutil
     import CalAdaptLib as cal
+    import glob
+    aprx = arcpy.mp.ArcGISProject("CURRENT")
 
 except ImportError:
     print('Some required Python modules are missing.')
@@ -957,10 +959,25 @@ class GetDataAPI(object):
             parameterType="Required",
             direction="Output")
         
-        libPath = os.path.dirname(cal.__file__)
-        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
-        cal.freshResourceList(resourceFile)
-        rl = cal.getVariables(resourceFile, variable="", gcm="", scenario="", period="")
+        #libPath = os.path.dirname(cal.__file__)
+        #resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        #resourceFile = glob.glob(aprx.homeFolder + "/**/datasets.txt" , recursive = True)
+
+        #if len(resourceFile) == 0:
+        #    file_exists = False
+            
+        
+        #arcpy.AddMessage(resourceFile)
+        #file_exists = os.path.exists(resourceFile)
+        #arcpy.AddMessage(file_exists)
+
+        #if file_exists == False:
+        #    cal.freshResourceList(aprx.homeFolder, True)
+        #else:
+        cal.freshResourceList(aprx.homeFolder)
+        #cal.freshResourceList(resourceFile)
+
+        rl = cal.getVariables(aprx.homeFolder, variable="", gcm="", scenario="", period="")
 
         variable.filter.list = rl[0]
         variable.value = ""
@@ -1005,10 +1022,10 @@ class GetDataAPI(object):
         else:
             period1 = ""
 
-        libPath = os.path.dirname(cal.__file__)
-        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
-        cal.freshResourceList(resourceFile)
-        rl = cal.getVariables(resourceFile, variable=variable1, gcm=gcm1, scenario="", period=period1)
+        #libPath = os.path.dirname(cal.__file__)
+        #resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        #cal.freshResourceList(resourceFile)
+        rl = cal.getVariables(aprx.homeFolder, variable=variable1, gcm=gcm1, scenario="", period=period1)
 
         if parameters[0].altered:
             # If the field is not in the new feature class
@@ -1089,9 +1106,9 @@ class GetDataAPI(object):
         stat = parameters[10].valueAsText
         outTable = parameters[11].valueAsText
 
-        libPath = os.path.dirname(cal.__file__)
-        resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
-        cal.freshResourceList(resourceFile)
+        #libPath = os.path.dirname(cal.__file__)
+        #resourceFile = ('%s/%s') %  (libPath, 'datasets.txt')
+        cal.freshResourceList(aprx.homeFolder)
         
         zz = outTable.split('\\')
         workspace = "/".join(zz[:-1])
@@ -1122,7 +1139,7 @@ class GetDataAPI(object):
         for aoi in aoiArray:
             aoiTemp = aoi[0]
             for scenario1 in scenarios:
-                CalAdaptFilename = cal.getResourceName(resourceFile, variable=variable1, gcm=gcm1, scenario=scenario1, period=period1)
+                CalAdaptFilename = cal.getResourceName(aprx.homeFolder, variable=variable1, gcm=gcm1, scenario=scenario1, period=period1)
                 results = cal.returnData(aoiTemp,stat,CalAdaptFilename[0])
                 g = cal.createTable(results,workspace,tableName,aoi, variable1, gcm1, scenario1, period1, stat)
             if (splitfeatures == True):

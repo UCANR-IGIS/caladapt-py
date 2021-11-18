@@ -1,4 +1,4 @@
-import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd, copy, warnings, math
+import arcpy, requests, urllib3, shutil, pprint, tempfile, json, os, time, pandas as pd, copy, warnings, math, glob
 arcpy.env.overwriteOutput = True
  
 def downloadData(baseurl, outLoc, filename):
@@ -49,6 +49,7 @@ def makeFileName(dataType,climateModel,climateScenario,variable,yearVar):
 
 #def returnData(wkt, scenario, variable, gcm, period, stat, fileName):
 def returnData(wkt, stat, fileName):
+    arcpy.env.addOutputsToMap = False
     # Query parameters dict
     pagesize1 = 1000
     params = {
@@ -89,6 +90,8 @@ def returnData(wkt, stat, fileName):
                     data = response.json()
                     # Get a list of Raster Stores
                     results = results + data['results']
+
+        arcpy.env.addOutputsToMap = True
 
         return [results, data['count']]
 
@@ -224,15 +227,22 @@ def createTable(results, workspace, tableName1, fieldName, variable, gcm, scenar
 
 def createChart(dateField, ClimateDesc1, ClimateField, tableName):
     aprx = arcpy.mp.ArcGISProject("current")
-    map = aprx.listMaps()[0]
-    caladapt_table = map.listTables(tableName)[0]
+    maps = aprx.listMaps()
 
-    c = arcpy.Chart('MyChart')
-    c.type = 'line'
-    c.xAxis.field = dateField
-    c.yAxis.field = ClimateField
-    c.line.splitCategory = ClimateDesc1
-    c.addToLayer(caladapt_table)
+    for map in maps:
+        for table in map.listTables():
+            if table.name == tableName:
+                caladapt_table = table
+
+                #map = aprx.listMaps()[0]
+                #caladapt_table = map.listTables(tableName)[0]
+
+                c = arcpy.Chart('MyChart')
+                c.type = 'line'
+                c.xAxis.field = dateField
+                c.yAxis.field = ClimateField
+                c.line.splitCategory = ClimateDesc1
+                c.addToLayer(caladapt_table)
 
 def createWKT(aoi, splitFeatures=False, fieldName=''):
     aoiTemp2 = tempfile.gettempdir() + "/wkt1.shp"
@@ -390,6 +400,13 @@ def createWKT(aoi, splitFeatures=False, fieldName=''):
     return wktArray
 
 def getVariables(dataFile, variable="", gcm="", period="", scenario=""):
+    #file_exists = os.path.exists(dataFile)
+    #arcpy.AddMessage(file_exists)
+
+    #if file_exists == False:
+    #    freshResourceList(dataFile, True)
+    dataFile = glob.glob(dataFile + "/**/datasets.txt" , recursive = True)[0]
+
     data = pd.read_csv(dataFile, sep=" ", header=None)
     data.columns = ["StringVariable"]
     data["counts"] = data.StringVariable.str.count("_")
@@ -436,6 +453,7 @@ def getVariables(dataFile, variable="", gcm="", period="", scenario=""):
     return [uniqueVariable,uniqueGCM,uniquePeriod,uniqueScenario]
 
 def getResourceName(dataFile, variable="", gcm="", period="", scenario=""):
+    dataFile = glob.glob(dataFile + "/**/datasets.txt" , recursive = True)[0]
     data = pd.read_csv(dataFile, sep=" ", header=None)
     data.columns = ["StringVariable"]
     data["counts"] = data.StringVariable.str.count("_")
@@ -464,15 +482,35 @@ def getResourceName(dataFile, variable="", gcm="", period="", scenario=""):
     
     return uniqueFilename
 
-def freshResourceList(resourceFile):
+def freshResourceList(resourceFile, create=False):
     def file_age(filepath):
         return time.time() - os.path.getmtime(filepath)
 
-    seconds = file_age(resourceFile) # 7200 seconds
-    minutes = int(seconds) / 60 # 120 minutes
-    hours = minutes / 60 # 2 hours
-    days = hours /24
-    weeks = days/7
+    resourceFile1 = glob.glob(resourceFile + "/**/datasets.txt" , recursive = True)
+    file_exists = True
+    if len(resourceFile1) == 0:
+        file_exists = False
+
+    #resourceFile = glob.glob(resourceFile + "/**/datasets.txt" , recursive = True)[0]
+    #arcpy.AddMessage(resourceFile)
+    #print(resourceFile)
+
+    #file_exists = os.path.exists(resourceFile)
+    #arcpy.AddMessage(file_exists)
+
+    if file_exists == False:
+        #cal.freshResourceList(resourceFile, True)
+        weeks = 2
+        resourceFile = '%s/datasets.txt' % (resourceFile)
+    else:
+        #cal.freshResourceList(resourceFile)
+        resourceFile = glob.glob(resourceFile + "/**/datasets.txt" , recursive = True)[0]
+
+        seconds = file_age(resourceFile) # 7200 seconds
+        minutes = int(seconds) / 60 # 120 minutes
+        hours = minutes / 60 # 2 hours
+        days = hours /24
+        weeks = days/7
 
     if weeks > 1:
         arcpy.AddMessage("Refreshing CalAdapt Resource List")
