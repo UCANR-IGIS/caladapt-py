@@ -4,6 +4,8 @@
 # caladapt-py <img src="https://ucanr-igis.github.io/caladapt-py/reference/figures/caladaptpy-beta_logo.svg" align="right" width="240" />
 
 <!-- badges: start -->
+[![degree-day-challenge: passing](https://raw.githubusercontent.com/ucanr-igis/degree-day-challenge/main/badges/degree-day-challenge-passing.svg)](https://ucanr-igis.github.io/degree-day-challenge/)
+
 
 [![Lifecycle:
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
